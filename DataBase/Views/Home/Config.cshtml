@@ -1,0 +1,83 @@
+﻿ @model IList<DataBase.Models.ViewModels.ConnectionStrings>
+
+     <h3>数据库连接配置</h3>
+
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>序号</th>
+                <th>名称</th>
+                <th>连接字符串</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var conn in Model)
+            { 
+               <tr>
+                <td>@conn.id</td>
+                <td>@conn.connectionStringName</td>
+                <td>@conn.connectionString</td>
+                <td>
+                    <a data-toggle="modal" herf="#" data-target="#myModal"  onclick="show(@conn.id,'@conn.connectionStringName','@conn.connectionString')">编辑</a> 
+                </td>
+            </tr>
+            } 
+        </tbody> 
+    </table>
+  
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">编辑连接字符串</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" id="f1" method="post" action="/Home/EditConfig">
+                    <input type="hidden" id="connectionId" name="connectionId" />
+                    <div class="form-group">
+                        <label for="connectionStringName">名称</label>
+                        <input type="text" class="form-control" id="connectionStringName" name="connectionStringName" placeholder="名称">
+                    </div>
+                    <div class="form-group">
+                        <label for="connectionString">连接字符串</label>
+                        <textarea class="form-control" rows="3" id="connectionString" placeholder="连接字符串" name="connectionString"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="save">保存</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button> 
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>  
+@section scripts{
+    <script>
+        var sn="";
+        var s="";
+        var id="";
+    $(function () {
+        $('#myModal').on('show.bs.modal', function () {
+            $("#connectionId").val(id);
+            $("#connectionStringName").val(sn);
+            $("#connectionString").val(s);
+        })
+
+        $("#save").bind("click",function(){
+            $("#f1").submit();
+        });
+    });
+         
+    function show()
+    {
+        id=arguments[0];
+        sn=arguments[1];
+        s=arguments[2];
+    }
+
+    
+</script>
+
+    }

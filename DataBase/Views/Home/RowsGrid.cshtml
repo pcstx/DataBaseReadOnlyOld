@@ -1,0 +1,105 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html> 
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Grid</title>
+    <link href="~/Scripts/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" />
+    <link href="~/Content/index.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/lib/ligerUI/js/ligerui.all.js"></script>    
+    <script type="text/javascript">
+
+        //var DepartmentList = DepartmentData.Rows;
+        var sexData = [{ Sex: 1, text: '男' }, { Sex: 2, text: '女' }];
+        $(f_initGrid);
+        var manager, g;
+        var rowUrl = location.protocol + "//" + location.host + '/Home/RowsGridJson/';
+        function f_initGrid() {
+            g = manager = $("#maingrid").ligerGrid({ 
+                columns: [
+                { display: '序号', name: 'id', width: 50, type: 'int', frozen: true },
+                {
+                    display: '主键', name: 'primaryKey', width: 50,
+                    render: function (rowdata, rowindex, value) {
+                        if (value == 1) return '√';
+                        return '';
+                    }
+                },
+                { display: '列名', name: 'name', width: 100  }, 
+                { display: '数据类型', name: 'rowType', width: 100 },
+                { display: '类型长度', name: 'lenght', width: 100, type: 'int'},
+                {
+                    display: '允许Null值', name: 'isNull', width: 70,
+                    render: function (rowdata, rowindex, value) {
+                        if (value == 1) return '是';
+                        return '否';
+                    }
+                },
+                { display: '默认值', name: 'defaultValue', width: 200 },
+                { display: '说明', name: 'note',   editor: { type: 'text' } }
+                ],
+                onSelectRow: function (rowdata, rowindex) {
+                    $("#txtrowindex").val(rowindex);
+                },
+                onEndEdit: function (editParm)
+                {  
+                }, 
+                enabledEdit: true, 
+                url: rowUrl + "/@(ViewBag.dbName)/@(ViewBag.TableName)", 
+                width: '100%'
+            });
+        }
+
+        function postRow()
+        {
+            $.post("");
+        }
+
+        function endAllEdit() {
+            manager.endEdit();
+        }
+
+        function deleteRow() {
+            manager.deleteSelectedRow();
+        }
+        var newrowid = 100;
+        function addNewRow() {
+            var row = manager.getSelectedRow();
+            //参数1:rowdata(非必填)
+            //参数2:插入的位置 Row Data
+            //参数3:之前或者之后(非必填)
+            manager.addRow({
+                DepartmentID: 3,
+                DepartmentName: '销售部',
+                RealName: "分为" + newrowid,
+                ID: newrowid++,
+                Sex: 1,
+                Age: 25,
+                IncomeDay: new Date(1306108800000),
+                Phone: "2343434",
+                Address: "wwrere4"
+            }, row, document.getElementById("chkbefore").checked);
+        }
+        function getSelected() {
+            var row = manager.getSelectedRow();
+            if (!row) { alert('请选择行'); return; }
+            alert(JSON.stringify(row));
+        }
+        function getData() {
+            var data = manager.getData();
+            alert(JSON.stringify(data));
+        }
+    </script>
+
+</head>
+<body>
+    <div>表名：</div>
+    <div>描述：</div>
+    <div id="maingrid"></div>
+</body>
+</html>

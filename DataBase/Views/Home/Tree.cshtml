@@ -1,0 +1,61 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Tree</title>
+    <link href="~/Scripts/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" />
+    <link href="~/Content/index.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script> 
+    
+    <script src="~/Scripts/lib/ligerUI/js/core/base.js"></script>
+    <script src="~/Scripts/lib/ligerUI/js/plugins/ligerTree.js"></script>
+    <script type="text/javascript">
+
+    $(function ()
+    {
+
+        $("#tree1").ligerTree({
+            nodeWidth: 300,
+            url: '/Home/DataBaseJson',
+            isLeaf : function(data)
+            {
+                if (!data) return false;
+                return data.type == "employee";
+            },
+            delay: function(e)
+            {
+                var data = e.data;
+                if (data.type == "database")
+                {
+                    return { url: 'treeDeptData.ashx?type=deptment&prev=' + data.id }
+                }
+                if (data.type == "deptment")
+                {
+                    return { url: 'treeDeptData.ashx?type=employee&prev=' + data.id }
+                }
+                return false;
+            },
+            checkbox: true,
+            idFieldName: 'id',
+            slide: false
+        });
+    } ); 
+    </script>
+           
+
+            </head>
+            <body>
+                <div class="box">
+                    <h4>全局定义模式</h4>
+                    <div class="tree">
+                        <ul id="tree1"></ul>
+                    </div>
+                </div>
+            </body>
+            </html>

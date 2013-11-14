@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<connectionStrings>
+  <add name="SqlServerHelper" connectionString="server=.;uid=sa;pwd=123456;database=yourdatabase" />
+  <add name="DefaultConnection" connectionString="Data Source=(LocalDb)\v11.0;Initial Catalog=aspnet-DataBaseReadOnly-20131029224948;Integrated Security=SSPI;AttachDBFilename=|DataDirectory|\aspnet-DataBaseReadOnly-20131029224948.mdf" providerName="System.Data.SqlClient" />
+  <add name="masterEntities" connectionString="metadata=res://*/Models.ModelMaster.csdl|res://*/Models.ModelMaster.ssdl|res://*/Models.ModelMaster.msl;provider=System.Data.SqlClient;provider connection string=&quot;data source=PC;initial catalog=master;persist security info=True;user id=sa;password=sa;multipleactiveresultsets=True;application name=EntityFramework&quot;" providerName="System.Data.EntityClient" />
+</connectionStrings>
