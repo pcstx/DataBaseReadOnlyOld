@@ -151,6 +151,24 @@ namespace DataBase.Controllers
             } 
         }
 
+        [LoginFilterAttribute]
+        public ActionResult Logout()
+        {
+            Session["ConnectionString_login"] = null;
+            return RedirectToAction("Login");
+        }
+
+        public static bool haveLogout()
+        { 
+             string loginType = ConfigurationManager.AppSettings["loginType"];
+             if (loginType == "1")
+             {
+                 return false;
+             }
+
+             return true;
+        }
+
          [LoginFilterAttribute]
         public ActionResult RefreshCache()
         { 

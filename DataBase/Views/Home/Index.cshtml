@@ -24,7 +24,11 @@
             <a href="@Url.Action("RefreshCache", "Home")">刷新缓存</a>
             <span class="space">|</span> 
             <a href="http://www.chendaren.com" target="_blank" class="l-link2">关于陈大人</a>
-         
+            @if (DataBase.Controllers.HomeController.haveLogout())
+            {
+                <span class="space">|</span>
+            <a href="@Url.Action("Logout","Home")">登出</a>
+            }
         </div>
     </div>
     <div id="layout1" style="width:99.2%; margin:0 auto; margin-top:4px; ">
