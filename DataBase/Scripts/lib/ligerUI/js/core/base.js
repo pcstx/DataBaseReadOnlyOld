@@ -1,9 +1,9 @@
 ﻿/**
-* jQuery ligerUI 1.2.2
+* jQuery ligerUI 1.2.5
 * 
 * http://ligerui.com
 *  
-* Author daomi 2013 [ gd_star@163.com ] 
+* Author daomi 2014 [ gd_star@163.com ] 
 * 
 */
 (function ($)
@@ -61,11 +61,11 @@
                 return;
             }
             if (!manager.id) manager.id = this.getId(manager.__idPrev());
-            if (this.managers[manager.id]) manager.id = this.getId(manager.__idPrev());
-            if (this.managers[manager.id])
-            {
-                throw new Error(this.error.managerIsExist);
-            }
+            //if (this.managers[manager.id]) manager.id = this.getId(manager.__idPrev());
+            //if (this.managers[manager.id])
+            //{
+            //    throw new Error(this.error.managerIsExist);
+            //}
             this.managers[manager.id] = manager;
         },
         remove: function (arg)
@@ -520,6 +520,13 @@
                 $(this.element).attr("ligeruiid", this.id);
             }
         },
+        _setCls: function (value)
+        {
+            if (this.element && value)
+            {
+                $(this.element).addClass(value);
+            }
+        },
         //返回要转换成ligerui参数的属性,比如['url']
         attr: function ()
         {
@@ -576,6 +583,10 @@
                 wrapper.removeClass("l-text-readonly");
             }
         },
+        setReadonly: function (readonly)
+        {
+            return this.set('readonly', readonly);
+        },
         setEnabled: function ()
         {
             return this.set('disabled', false);
@@ -590,7 +601,7 @@
         },
         resize: function (width, height)
         {
-            this.set({ width: width, height: height });
+            this.set({ width: width, height: height + 2 });
         }
     });
 
@@ -888,14 +899,19 @@
     {
         var type = e.type, control = e.control, master = e.master;
         if (!type) return null;
+        var inputTag = 0;
         if (control) control = control.substr(0, 1).toUpperCase() + control.substr(1);
         return $.extend({
             create: function (container, editParm, controlOptions)
             {
                 //field in form , column in grid
                 var field = editParm.field || editParm.column, options = controlOptions || {};
+                var isInGrid = editParm.column ? true : false;
                 var p = $.extend({}, e.options);
-                var inputBody = $("<input type='" + (e.password ? "password" : "text") + "'/>");
+                var inputType = "text";
+                if ($.inArray(type, ["password", "file"]) != -1) inputType = type;
+                if (e.password) inputType = "password";
+                var inputBody = $("<input type='" + inputType + "'/>");
                 if (e.body)
                 {
                     inputBody = e.body.clone();
@@ -909,18 +925,19 @@
                     if ($.inArray(type, ["select", "combobox", "autocomplete", "popup"]) != -1)
                     {
                         txtInputName = field.textField || field.comboboxName;
-                        if (field.comboboxName && !field.id) 
+                        if (field.comboboxName && !field.id)
                             p.id = (options.prefixID || "") + field.comboboxName;
                     }
                     if ($.inArray(type, ["select", "combobox", "autocomplete", "popup", "radiolist", "checkboxlist", "listbox"]) != -1)
                     {
                         p.valueFieldID = prefixID + field.name;
-                    } 
+                    }
                     if (!e.body)
                     {
-                        var inputName = prefixID  + txtInputName;
+                        var inputName = prefixID + txtInputName;
+                        var inputId = new Date().getTime() + "_" + ++inputTag;
                         inputBody.attr($.extend({
-                            //id: p.id,
+                            id: inputId,
                             name: inputName
                         }, field.attr));
                         if (field.cssClass)
@@ -933,6 +950,25 @@
                         }
                     }
                     $.extend(p, field.options);
+                }
+                if (field.dictionary) //字典字段，比如:男|女
+                {
+                    field.editor = field.editor || {};
+                    if (!field.editor.data)
+                    {
+                        var dicEditorData = [], dicItems = field.dictionary.split('|');
+                        $(dicItems).each(function (i, dicItem)
+                        {
+                            var dics = dicItem.split(',');
+                            var dicItemId = dics[0], dicItemText = dics.length >= 2 ? dics[1] : dics[0];
+                            dicEditorData.push({
+                                id: dicItemId,
+                                value: dicItemId,
+                                text: dicItemText
+                            });
+                        });
+                        field.editor.data = dicEditorData;
+                    }
                 }
                 if (field.editor)
                 {
@@ -956,19 +992,35 @@
                     $.extend(p, ext);
                 }
                 //返回的是ligerui对象
-                return inputBody['liger' + control](p);
+                var lobj = inputBody['liger' + control](p);
+                if (isInGrid)
+                {
+                    setTimeout(function () { inputBody.focus(); }, 100);
+                }
+                return lobj;
             },
             getValue: function (editor, editParm)
             {
+                var field = editParm.field || editParm.column;
                 if (editor.getValue)
                 {
-                    return editor.getValue();
+                    var value = editor.getValue();
+                    if (field && field.editor && field.editor.isArrayValue && value)
+                    {
+                        value = value.split(';');
+                    }
+                    return value;
                 }
             },
             setValue: function (editor, value, editParm)
             {
+                var field = editParm.field || editParm.column;
                 if (editor.setValue)
                 {
+                    if (field && field.editor && field.editor.isArrayValue && value)
+                    {
+                        value = value.join(';');
+                    }
                     editor.setValue(value);
                 }
             },
@@ -997,6 +1049,17 @@
             {
                 if (editParm.field) width = width - 2;
                 if (editor.resize) editor.resize(width, height);
+            },
+            setEnabled: function (editor, isEnabled)
+            {
+                if (isEnabled)
+                {
+                    if (editor.setEnabled) editor.setEnabled();
+                }
+                else
+                {
+                    if (editor.setDisabled) editor.setDisabled();
+                }
             },
             destroy: function (editor, editParm)
             {

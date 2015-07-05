@@ -1,9 +1,9 @@
 ﻿/**
-* jQuery ligerUI 1.2.2
+* jQuery ligerUI 1.2.4
 * 
 * http://ligerui.com
 *  
-* Author daomi 2013 [ gd_star@163.com ] 
+* Author daomi 2014 [ gd_star@163.com ] 
 * 
 */
 (function ($)
@@ -79,7 +79,7 @@
 
         优先级没有节点数据的delay属性高
         */
-        delay: null                
+        delay: null
     };
 
     $.ligerui.controls.Tree = function (element, options)
@@ -101,7 +101,7 @@
             g.tree = $(g.element);
             g.tree.addClass('l-tree');
             g.toggleNodeCallbacks = [];
-            g.sysAttribute = ['isexpand', 'ischecked', 'href', 'style','delay'];
+            g.sysAttribute = ['isexpand', 'ischecked', 'href', 'style', 'delay'];
             g.loading = $("<div class='l-tree-loading'></div>");
             g.tree.after(g.loading);
             g.data = [];
@@ -121,9 +121,17 @@
             var g = this, p = this.options;
             if ($.isFunction(p.parms)) p.parms = p.parms();
         },
+        reload: function (callback)
+        {
+            var g = this, p = this.options;
+            g.clear();
+            g.loadData(null, p.url, null, {
+                success: callback
+            });
+        },
         _setUrl: function (url)
         {
-            var g = this, p = this.options; 
+            var g = this, p = this.options;
             if (url)
             {
                 g.clear();
@@ -131,7 +139,7 @@
             }
         },
         _setData: function (data)
-        { 
+        {
             if (data)
             {
                 this.clear();
@@ -195,6 +203,15 @@
                 nodes.push({ target: this, data: g._getDataNodeByTreeDataIndex(g.data, treedataindex) });
             });
             return nodes;
+        },
+        //add by superzoc 12/24/2012 
+        refreshTree: function ()
+        {
+            var g = this, p = this.options;
+            $.each(this.getChecked(), function (k, v)
+            {
+                g._setParentCheckboxStatus($(v.target));
+            });
         },
         getSelected: function ()
         {
@@ -261,7 +278,7 @@
             var g = this, p = this.options;
             $(".l-expandable-close", g.tree).click();
         },
-        loadData: function (node, url, param,e)
+        loadData: function (node, url, param, e)
         {
             var g = this, p = this.options;
             e = $.extend({
@@ -269,13 +286,16 @@
                 {
                     g.loading.show();
                 },
+                success: function () { },
+                error: function () { },
                 hideLoading: function ()
                 {
                     g.loading.hide();
                 }
             }, e || {});
-            var ajaxtype = p.ajaxType; 
-            param = param || []; 
+            var ajaxtype = p.ajaxType;
+            //解决树无法设置parms的问题
+            param = $.extend(($.isFunction(p.parms) ? p.parms() : p.parms), param);
             //请求服务器
             $.ajax({
                 type: ajaxtype,
@@ -292,6 +312,7 @@
                     e.hideLoading();
                     g.append(node, data);
                     g.trigger('success', [data]);
+                    e.success(data);
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown)
                 {
@@ -299,6 +320,7 @@
                     {
                         e.hideLoading();
                         g.trigger('error', [XMLHttpRequest, textStatus, errorThrown]);
+                        e.error(XMLHttpRequest, textStatus, errorThrown);
                     }
                     catch (e)
                     {
@@ -441,7 +463,7 @@
                 }, function ()
                 {
                     $(this).removeClass("l-over");
-                }); 
+                });
                 g._upadteTreeWidth();
                 g.trigger('afterAppend', [parentNode, newdata])
                 return;
@@ -517,12 +539,20 @@
                 var treedataindex = parseInt(treeitem.attr("treedataindex"));
                 var treenodedata = g._getDataNodeByTreeDataIndex(g.data, treedataindex);
                 var treeitembody = $(">div:first", treeitem);
+                if (!treeitembody.length)
+                {
+                    treeitembody = $("li[treedataindex=" + treedataindex + "] >div:first", g.tree);
+                }
                 if (p.checkbox)
+                {
                     $(".l-checkbox", treeitembody).removeClass("l-checkbox-unchecked").addClass("l-checkbox-checked");
+                }
                 else
+                {
+                    $("div.l-selected", g.tree).removeClass("l-selected");
                     treeitembody.addClass("l-selected");
-
-                g.trigger('select', [{ data: treenodedata, target: treeitem[0] }]);
+                }
+                g.trigger('select', [{ data: treenodedata, target: treeitembody.parent().get(0) }]);
                 return;
             }
             else
@@ -530,7 +560,7 @@
                 clause = function (data)
                 {
                     if (!data[p.idFieldName]) return false;
-                    return data[p.idFieldName].toString() == selectNodeParm.toString();
+                    return strTrim(data[p.idFieldName].toString()) == strTrim(selectNodeParm.toString());
                 };
             }
             $("li", g.tree).each(function ()
@@ -544,7 +574,11 @@
                 }
                 else
                 {
-                    g.cancelSelect(this);
+                    //修复多选checkbox为true时调用该方法会取消已经选中节点的问题
+                    if (!g.options.checkbox)
+                    {
+                        g.cancelSelect(this);
+                    }
                 }
             });
         },
@@ -643,18 +677,18 @@
         _addToNodes: function (data)
         {
             var g = this, p = this.options;
-            g.nodes = g.nodes || []; 
+            g.nodes = g.nodes || [];
             g.nodes.push(data);
-            if (!data.children) return; 
+            if (!data.children) return;
             $(data.children).each(function (i, item)
             {
                 g._addToNodes(item);
-            }); 
+            });
         },
         //添加项到g.data
         _appendData: function (treeNode, data)
         {
-            var g = this, p = this.options; 
+            var g = this, p = this.options;
             var treedataindex = parseInt($(treeNode).attr("treedataindex"));
             var treenodedata = g._getDataNodeByTreeDataIndex(g.data, treedataindex);
             if (g.treedataindex == undefined) g.treedataindex = 0;
@@ -719,7 +753,7 @@
             return nodeclassname;
         },
         //判断节点是否展开状态,返回true/false
-        _isExpand : function(o,level)
+        _isExpand: function (o, level)
         {
             var g = this, p = this.options;
             var isExpand = o.isExpand != null ? o.isExpand : (o.isexpand != null ? o.isexpand : p.isExpand);
@@ -727,22 +761,22 @@
             if (typeof (isExpand) == "function") isExpand = p.isExpand({ data: o, level: level });
             if (typeof (isExpand) == "boolean") return isExpand;
             if (typeof (isExpand) == "string") return isExpand == "true";
-            if (typeof (isExpand) == "number") return isExpand > level; 
+            if (typeof (isExpand) == "number") return isExpand > level;
             return true;
         },
         //获取节点的延迟加载状态,返回true/false (本地模式) 或者是object({url :'...',parms:null})(远程模式)
         _getDelay: function (o, level)
         {
-            var g = this, p = this.options; 
+            var g = this, p = this.options;
             var delay = o.delay != null ? o.delay : p.delay;
-            if (delay == null) return false; 
+            if (delay == null) return false;
             if (typeof (delay) == "function") delay = delay({ data: o, level: level });
             if (typeof (delay) == "boolean") return delay;
-            if (typeof (delay) == "string") return { url: delay }; 
+            if (typeof (delay) == "string") return { url: delay };
             if (typeof (delay) == "number") delay = [delay];
             if ($.isArray(delay)) return $.inArray(level, delay) != -1;
             if (typeof (delay) == "object" && delay.url) return delay;
-            return false; 
+            return false;
         },
         //根据data生成最终完整的tree html
         _getTreeHTMLByData: function (data, outlineLevel, isLast, isExpand)
@@ -762,7 +796,7 @@
                 var isLastCurrent = i == data.length - 1;
                 var delay = g._getDelay(o, outlineLevel);
                 var isExpandCurrent = delay ? false : g._isExpand(o, outlineLevel);
-                
+
                 treehtmlarr.push('<li ');
                 if (o.treedataindex != undefined)
                     treehtmlarr.push('treedataindex="' + o.treedataindex + '" ');
@@ -798,7 +832,7 @@
                 {
                     if (isLast[k]) treehtmlarr.push('<div class="l-box"></div>');
                     else treehtmlarr.push('<div class="l-box l-line"></div>');
-                } 
+                }
                 if (g.hasChildren(o))
                 {
                     if (isExpandCurrent) treehtmlarr.push('<div class="l-box l-expandable-open"></div>');
@@ -862,9 +896,9 @@
                     {
                         isLastNew.push(isLast[k]);
                     }
-                    isLastNew.push(isLastCurrent); 
+                    isLastNew.push(isLastCurrent);
                     if (delay)
-                    { 
+                    {
                         if (delay == true)
                         {
                             g.toggleNodeCallbacks.push({
@@ -884,7 +918,7 @@
                                 }
                             });
                         }
-                        else if(delay.url)
+                        else if (delay.url)
                         {
                             (function (o, url, parms)
                             {
@@ -894,7 +928,7 @@
                                     {
                                         g.loadData(dom, url, parms, {
                                             showLoading: function ()
-                                            { 
+                                            {
                                                 $("div.l-expandable-close:first", dom).addClass("l-box-loading");
                                             },
                                             hideLoading: function ()
@@ -965,7 +999,7 @@
         _applyTree: function ()
         {
             var g = this, p = this.options;
-            g.data = g._getDataByTreeHTML(g.tree); 
+            g.data = g._getDataByTreeHTML(g.tree);
             var gridhtmlarr = g._getTreeHTMLByData(g.data, 1, [], true);
             gridhtmlarr[gridhtmlarr.length - 1] = gridhtmlarr[0] = "";
             g.tree.html(gridhtmlarr.join(''));
@@ -977,7 +1011,7 @@
             {
                 $(this).removeClass("l-over");
             });
-        },  
+        },
         _getSrcElementByEvent: function (e)
         {
             var g = this;
@@ -1044,7 +1078,7 @@
                 var treeitembtn = $("div.l-body:first", treeitem).find("div.l-expandable-open:first,div.l-expandable-close:first");
                 var clickOnTreeItemBtn = $(obj).hasClass("l-expandable-open") || $(obj).hasClass("l-expandable-close");
                 if (!$(obj).hasClass("l-checkbox") && !clickOnTreeItemBtn)
-                { 
+                {
                     if (!treeitem.hasClass("l-unselectable"))
                     {
                         if ($(">div:first", treeitem).hasClass("l-selected") && p.needCancel)
@@ -1378,5 +1412,12 @@
         }
     });
 
+
+
+    function strTrim(str)
+    {
+        if (!str) return str;
+        return str.replace(/(^\s*)|(\s*$)/g, '');
+    };
 
 })(jQuery);

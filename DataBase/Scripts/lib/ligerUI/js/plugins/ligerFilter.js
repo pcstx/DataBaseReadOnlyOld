@@ -1,9 +1,9 @@
 ﻿/**
-* jQuery ligerUI 1.2.2
+* jQuery ligerUI 1.2.4
 * 
 * http://ligerui.com
 *  
-* Author daomi 2013 [ gd_star@163.com ] 
+* Author daomi 2014 [ gd_star@163.com ] 
 * 
 */
 (function ($)
@@ -187,31 +187,33 @@
         {
             var g = this, p = this.options;
 
-            g.set(p);
-
+            g.set(p); 
             //事件：增加分组
-            $("#" + g.id + " .addgroup").live('click', function ()
+            $(g.element)[$.fn.on ? "on" : "live"]("click", function ()
             {
-                var jtable = $(this).parent().parent().parent().parent();
-                g.addGroup(jtable);
-            });
-            //事件：删除分组
-            $("#" + g.id + " .deletegroup").live('click', function ()
-            {
-                var jtable = $(this).parent().parent().parent().parent();
-                g.deleteGroup(jtable);
-            });
-            //事件：增加条件
-            $("#" + g.id + " .addrule").live('click', function ()
-            {
-                var jtable = $(this).parent().parent().parent().parent();
-                g.addRule(jtable);
-            });
-            //事件：删除条件
-            $("#" + g.id + " .deleterole").live('click', function ()
-            {
-                var rulerow = $(this).parent().parent();
-                g.deleteRule(rulerow);
+                var e = event.srcElement;
+                var cn = e.className;
+
+                if (cn.indexOf("addgroup") >= 0)
+                {
+                    var jtable = $(e).parent().parent().parent().parent();
+                    g.addGroup(jtable);
+                }
+                else if (cn.indexOf("deletegroup") >= 0)
+                {
+                    var jtable = $(e).parent().parent().parent().parent();
+                    g.deleteGroup(jtable);
+                }
+                else if (cn.indexOf("addrule") >= 0)
+                {
+                    var jtable = $(e).parent().parent().parent().parent();
+                    g.addRule(jtable);
+                }
+                else if (cn.indexOf("deleterole") >= 0)
+                {
+                    var rulerow = $(e).parent().parent();
+                    g.deleteRule(rulerow);
+                }
             });
 
         },
@@ -545,5 +547,106 @@
 
 
     });
+
+    $.ligerFilter = function () { };
+    $.ligerFilter.filterTranslator = {
+        translateGroup: function (group)
+        {
+            var out = [];
+            if (group == null) return " 1==1 ";
+            var appended = false;
+            out.push('(');
+            if (group.rules != null)
+            {
+                for (var i in group.rules)
+                {
+                    if (i == "indexOf")
+                        continue;
+                    var rule = group.rules[i];
+                    if (appended)
+                        out.push(this.getOperatorQueryText(group.op));
+                    out.push(this.translateRule(rule));
+                    appended = true;
+                }
+            }
+            if (group.groups != null)
+            {
+                for (var j in group.groups)
+                {
+                    var subgroup = group.groups[j];
+                    if (appended)
+                        out.push(this.getOperatorQueryText(group.op));
+                    out.push(this.translateGroup(subgroup));
+                    appended = true;
+                }
+            }
+            out.push(')');
+            if (appended == false) return " 1==1 ";
+            return out.join('');
+        },
+
+        translateRule: function (rule)
+        {
+            var out = [];
+            if (rule == null) return " 1==1 ";
+            if (rule.op == "like" || rule.op == "startwith" || rule.op == "endwith")
+            {
+                out.push('/');
+                if (rule.op == "startwith")
+                    out.push('^');
+                out.push(rule.value);
+                if (rule.op == "endwith")
+                    out.push('$');
+                out.push('/i.test(');
+                out.push('o["');
+                out.push(rule.field);
+                out.push('"]');
+                out.push(')');
+                return out.join('');
+            }
+            out.push('o["');
+            out.push(rule.field);
+            out.push('"]');
+            out.push(this.getOperatorQueryText(rule.op));
+            out.push('"');
+            out.push(rule.value);
+            out.push('"');
+            return out.join('');
+        },
+
+        getOperatorQueryText: function (op)
+        {
+            switch (op)
+            {
+                case "equal":
+                    return " == ";
+                case "notequal":
+                    return " != ";
+                case "greater":
+                    return " > ";
+                case "greaterorequal":
+                    return " >= ";
+                case "less":
+                    return " < ";
+                case "lessorequal":
+                    return " <= ";
+                case "and":
+                    return " && ";
+                case "or":
+                    return " || ";
+                default:
+                    return " == ";
+            }
+        }
+
+    };
+    $.ligerFilter.getFilterFunction = function (condition)
+    {
+        if ($.isArray(condition))
+            condition = { op: "and", rules: condition };
+        var fnbody = ' return  ' + $.ligerFilter.filterTranslator.translateGroup(condition);
+        return new Function("o", fnbody);
+    };
+
 
 })(jQuery);

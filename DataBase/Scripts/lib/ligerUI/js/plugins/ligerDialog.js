@@ -1,9 +1,9 @@
 ﻿/**
-* jQuery ligerUI 1.2.2
+* jQuery ligerUI 1.2.4
 * 
 * http://ligerui.com
 *  
-* Author daomi 2013 [ gd_star@163.com ] 
+* Author daomi 2014 [ gd_star@163.com ] 
 * 
 */
 
@@ -47,6 +47,7 @@
 
     $.ligerDefaults.Dialog = {
         cls: null,       //给dialog附加css class
+        contentCls: null,
         id: null,        //给dialog附加id
         buttons: null, //按钮集合 
         isDrag: true,   //是否拖动
@@ -60,6 +61,7 @@
         left: null,     //位置left
         top: null,      //位置top
         modal: true,    //是否模态对话框
+        data: null,     //传递数据容器
         name: null,     //创建iframe时 作为iframe的name和id 
         isResize: false, // 是否调整大小
         allowClose: true, //允许关闭
@@ -135,9 +137,11 @@
             {
                 p.type = null;
                 g.dialog.addClass("l-dialog-win");
+
             }
             if (p.cls) g.dialog.addClass(p.cls);
             if (p.id) g.dialog.attr("id", p.id);
+
             //设置锁定屏幕、拖动支持 和设置图片
             g.mask();
             if (p.isDrag)
@@ -151,6 +155,8 @@
                 $(".l-dialog-image", g.dialog).remove();
                 g.dialog.content.addClass("l-dialog-content-noimage");
             }
+            if (p.contentCls)
+                g.dialog.content.addClass(p.contentCls);
             if (!p.show)
             {
                 g.unmask();
@@ -184,10 +190,26 @@
                     g.jiframe.attr("name", framename);
                     g.jiframe.attr("id", framename);
                     g.dialog.content.prepend(g.jiframe);
-                    g.dialog.content.addClass("l-dialog-content-nopadding");
+                    g.dialog.content.addClass("l-dialog-content-nopadding l-dialog-content-frame");
+
                     setTimeout(function ()
                     {
-                        g.jiframe.attr("src", p.url);
+                        if (g.dialog.body.find(".l-dialog-loading:first").length == 0)
+                            g.dialog.body.append("<div class='l-dialog-loading' style='display:block;'></div>");
+                        var iframeloading = $(".l-dialog-loading:first", g.dialog.body);
+                        g.jiframe[0].dialog = g;//增加窗口对dialog对象的引用
+                        /*
+                        可以在子窗口这样使用：
+                        var dialog = frameElement.dialog;
+                        var dialogData = dialog.get('data');//获取data参数
+                        dialog.set('title','新标题'); //设置标题
+                        dialog.close();//关闭dialog 
+                        */
+                        g.jiframe.attr("src", p.url).bind('load.dialog', function ()
+                        {
+                            iframeloading.hide();
+                            g.trigger('loaded');
+                        });
                         g.frame = window.frames[g.jiframe.attr("name")];
                     }, 0);
                     // 为了解决ie下对含有iframe的div窗口销毁不正确，进而导致第二次打开时焦点不在当前图层的问题
@@ -209,6 +231,7 @@
                     $(".l-dialog-buttons-inner", g.dialog.buttons).prepend(btn);
                     item.width && btn.width(item.width);
                     item.onclick && btn.click(function () { item.onclick(item, g, i) });
+                    item.cls && btn.addClass(item.cls);
                 });
             } else
             {
@@ -232,6 +255,19 @@
                     g.close();
             });
             if (!p.fixedType)
+            {
+                if (p.width == 'auto')
+                {
+                    setTimeout(function ()
+                    {
+                        resetPos()
+                    }, 100);
+                } else
+                {
+                    resetPos();
+                }
+            }
+            function resetPos()
             {
                 //位置初始化
                 var left = 0;
@@ -477,7 +513,10 @@
         {
             var g = this, p = this.options;
             if (!this.dialog) return;
-            if (value >= this._borderY)
+            if (value == "auto")
+            {
+                g.dialog.content.height('auto');
+            } else if (value >= this._borderY)
             {
                 var height = value - this._borderY - g.dialog.buttons.outerHeight();
                 if (g.trigger('ContentHeightChange', [height]) == false) return;
@@ -633,7 +672,15 @@
                 {
                     var frame = jframe[0];
                     frame.src = "about:blank";
-                    frame.contentWindow.document.write('');
+                    if (frame.contentWindow && frame.contentWindow.document)
+                    { 
+                        try
+                        {
+                            frame.contentWindow.document.write('');
+                        } catch (e)
+                        {
+                        }
+                    }
                     $.browser.msie && CollectGarbage();
                     jframe.remove();
                 }
@@ -651,6 +698,7 @@
         {
             var g = this;
             l.win.removeTask(this);
+            $.ligerui.remove(this);
             g.unmask();
             g._removeDialog();
             $('body').unbind('keydown.dialog');
@@ -928,7 +976,7 @@
         });
         return $.ligerDialog.open(options);
     };
-    $.ligerDialog.alert = function (content, title, type, callback)
+    $.ligerDialog.alert = function (content, title, type, callback, options)
     {
         content = content || "";
         if (typeof (title) == "function")
@@ -956,7 +1004,7 @@
             showMax: false,
             showToggle: false,
             showMin: false
-        });
+        }, options || {});
         return $.ligerDialog(p);
     };
 
@@ -988,7 +1036,7 @@
         });
         return $.ligerDialog(p);
     };
-    $.ligerDialog.warning = function (content, title, callback)
+    $.ligerDialog.warning = function (content, title, callback, options)
     {
         if (typeof (title) == "function")
         {
@@ -1013,7 +1061,7 @@
             showMax: false,
             showToggle: false,
             showMin: false
-        });
+        }, options || {});
         return $.ligerDialog(p);
     };
     $.ligerDialog.waitting = function (title)
@@ -1031,21 +1079,21 @@
                 d.close();
         }
     };
-    $.ligerDialog.success = function (content, title, onBtnClick)
+    $.ligerDialog.success = function (content, title, onBtnClick, options)
     {
-        return $.ligerDialog.alert(content, title, 'success', onBtnClick);
+        return $.ligerDialog.alert(content, title, 'success', onBtnClick, options);
     };
-    $.ligerDialog.error = function (content, title, onBtnClick)
+    $.ligerDialog.error = function (content, title, onBtnClick, options)
     {
-        return $.ligerDialog.alert(content, title, 'error', onBtnClick);
+        return $.ligerDialog.alert(content, title, 'error', onBtnClick, options);
     };
-    $.ligerDialog.warn = function (content, title, onBtnClick)
+    $.ligerDialog.warn = function (content, title, onBtnClick, options)
     {
-        return $.ligerDialog.alert(content, title, 'warn', onBtnClick);
+        return $.ligerDialog.alert(content, title, 'warn', onBtnClick, options);
     };
-    $.ligerDialog.question = function (content, title)
+    $.ligerDialog.question = function (content, title, options)
     {
-        return $.ligerDialog.alert(content, title, 'question');
+        return $.ligerDialog.alert(content, title, 'question', null, options);
     };
 
 

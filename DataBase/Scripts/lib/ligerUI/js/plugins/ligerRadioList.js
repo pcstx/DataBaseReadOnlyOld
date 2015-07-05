@@ -1,9 +1,9 @@
 ﻿/**
-* jQuery ligerUI 1.2.2
+* jQuery ligerUI 1.2.4
 * 
 * http://ligerui.com
 *  
-* Author daomi 2013 [ gd_star@163.com ] 
+* Author daomi 2014 [ gd_star@163.com ] 
 * 
 */
 (function ($)
@@ -12,22 +12,23 @@
     $.fn.ligerRadioList = function (options)
     {
         return $.ligerui.run.call(this, "ligerRadioList", arguments);
-    }; 
+    };
 
-    $.ligerDefaults.RadioList = {  
+    $.ligerDefaults.RadioList = {
         rowSize: 3,            //每行显示元素数   
         valueField: 'id',       //值成员
         textField: 'text',      //显示成员 
-        valueFieldID:null,      //隐藏域
-        name : null,            //表单名 
+        valueFieldID: null,      //隐藏域
+        name: null,            //表单名 
         data: null,             //数据  
         parms: null,            //ajax提交表单 
         url: null,              //数据源URL(需返回JSON)
         onSuccess: null,
-        onError: null,  
+        onError: null,
+        onSelect: null,
         css: null,               //附加css  
         value: null,            //值 
-        valueFieldCssClass : null
+        valueFieldCssClass: null
     };
 
     //扩展方法
@@ -53,10 +54,10 @@
         },
         _render: function ()
         {
-            var g = this, p = this.options; 
-            g.data = p.data;    
+            var g = this, p = this.options;
+            g.data = p.data;
             g.valueField = null; //隐藏域(保存值) 
-               
+
             if (p.valueFieldID)
             {
                 g.valueField = $("#" + p.valueFieldID + ":input,[name=" + p.valueFieldID + "]:input");
@@ -76,32 +77,33 @@
             g.valueField.attr("data-ligerid", g.id);
             g.radioList = $(this.element);
             g.radioList.html('<div class="l-radiolist-inner"><table cellpadding="0" cellspacing="0" border="0" class="l-radiolist-table"></table></div>').addClass("l-radiolist").append(g.valueField);
-            g.radioList.table = $("table:first", g.radioList); 
-              
+            g.radioList.table = $("table:first", g.radioList);
+
 
             p.value = g.valueField.val() || p.value;
 
-            g.set(p); 
+            g.set(p);
 
             g._addClickEven();
         },
         destroy: function ()
-        { 
+        {
             if (this.radioList) this.radioList.remove();
             this.options = null;
             $.ligerui.remove(this);
         },
-        clear : function()
+        clear: function ()
         {
             this._changeValue("");
             this.trigger('clear');
-        }, 
-        _setCss : function(css)
+        },
+        _setCss: function (css)
         {
-            if (css) {
+            if (css)
+            {
                 this.radioList.addClass(css);
-            } 
-        }, 
+            }
+        },
         _setDisabled: function (value)
         {
             //禁用样式
@@ -114,7 +116,7 @@
                 this.radioList.removeClass('l-radiolist-disabled');
                 $("input:radio", this.radioList).removeAttr("disabled");
             }
-        }, 
+        },
         _setWidth: function (value)
         {
             this.radioList.width(value);
@@ -122,8 +124,8 @@
         _setHeight: function (value)
         {
             this.radioList.height(value);
-        },  
-        indexOf : function(item)
+        },
+        indexOf: function (item)
         {
             var g = this, p = this.options;
             if (!g.data) return -1;
@@ -139,11 +141,11 @@
             }
             return -1;
         },
-        removeItems : function(items)
+        removeItems: function (items)
         {
             var g = this;
             if (!g.data) return;
-            $(items).each(function (i,item)
+            $(items).each(function (i, item)
             {
                 var index = g.indexOf(item);
                 if (index == -1) return;
@@ -159,10 +161,10 @@
             this.data.splice(index, 1);
             this.refresh();
         },
-        insertItem: function (item,index)
+        insertItem: function (item, index)
         {
             var g = this;
-            if (!g.data) g.data = []; 
+            if (!g.data) g.data = [];
             g.data.splice(index, 0, item);
             g.refresh();
         },
@@ -182,68 +184,73 @@
             if (!g.data) g.data = [];
             g.data.push(item);
             g.refresh();
-        },  
+        },
         _setValue: function (value)
-        { 
+        {
             var g = this, p = this.options;
             p.value = value;
-            this._dataInit(); 
+            this._dataInit();
         },
         setValue: function (value)
-        { 
+        {
             this._setValue(value);
-        }, 
-        _setUrl: function (url) {
+        },
+        _setUrl: function (url)
+        {
             if (!url) return;
-            var g = this, p = this.options; 
+            var g = this, p = this.options;
             $.ajax({
                 type: 'post',
                 url: url,
                 data: p.parms,
                 cache: false,
                 dataType: 'json',
-                success: function (data) { 
+                success: function (data)
+                {
                     g.setData(data);
                     g.trigger('success', [data]);
                 },
-                error: function (XMLHttpRequest, textStatus) {
+                error: function (XMLHttpRequest, textStatus)
+                {
                     g.trigger('error', [XMLHttpRequest, textStatus]);
                 }
             });
         },
-        setUrl: function (url) {
+        setUrl: function (url)
+        {
             return this._setUrl(url);
         },
-        setParm: function (name, value) {
+        setParm: function (name, value)
+        {
             if (!name) return;
             var g = this;
             var parms = g.get('parms');
             if (!parms) parms = {};
             parms[name] = value;
-            g.set('parms', parms); 
+            g.set('parms', parms);
         },
         clearContent: function ()
         {
             var g = this, p = this.options;
-            $("table", g.radioList).html(""); 
-        }, 
-        _setData : function(data)
+            $("table", g.radioList).html("");
+        },
+        _setData: function (data)
         {
             this.setData(data);
         },
         setData: function (data)
         {
-            var g = this, p = this.options; 
+            var g = this, p = this.options;
             if (!data || !data.length) return;
             g.data = data;
             g.refresh();
             g.updateStyle();
         },
-        refresh:function()
+        refresh: function ()
         {
-            var g = this, p = this.options, data = this.data; 
+            var g = this, p = this.options, data = this.data;
             this.clearContent();
-            if (!data) return; 
+            if (!data) return;
             var out = [], rowSize = p.rowSize, appendRowStart = false, name = p.name || g.id;
             for (var i = 0; i < data.length; i++)
             {
@@ -252,7 +259,7 @@
                 //0,5,10
                 if (newRow)
                 {
-                    if (appendRowStart) out.push('</tr>'); 
+                    if (appendRowStart) out.push('</tr>');
                     out.push("<tr>");
                     appendRowStart = true;
                 }
@@ -262,7 +269,7 @@
             g.radioList.table.append(out.join(''));
         },
         _getValue: function ()
-        { 
+        {
             var g = this, p = this.options, name = p.name || g.id;
             return $('input:radio[name="' + name + '"]:checked').val();
         },
@@ -270,10 +277,18 @@
         {
             //获取值
             return this._getValue();
-        },  
+        },
         updateStyle: function ()
-        { 
-            this._dataInit();
+        {
+            var g = this, p = this.options;
+            g._dataInit();
+            $(":radio", g.element).change(function ()
+            {
+                var value = g.getValue();
+                g.trigger('select', [{
+                    value: value
+                }]);
+            });
         },
         _dataInit: function ()
         {
@@ -297,12 +312,12 @@
             var g = this, p = this.options;
             //选项点击
             g.radioList.click(function (e)
-            {  
+            {
                 var value = g.getValue();
                 if (value) g.valueField.val(value);
             });
-        } 
+        }
     });
-      
+
 
 })(jQuery);

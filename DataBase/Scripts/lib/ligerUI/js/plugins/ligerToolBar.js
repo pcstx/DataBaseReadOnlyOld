@@ -1,9 +1,9 @@
 ﻿﻿/**
-* jQuery ligerUI 1.2.2
+* jQuery ligerUI 1.2.4
 * 
 * http://ligerui.com
 *  
-* Author daomi 2013 [ gd_star@163.com ] 
+* Author daomi 2014 [ gd_star@163.com ] 
 * 
 */
 (function ($)
@@ -80,9 +80,14 @@
         addItem: function (item)
         {
             var g = this, p = this.options;
-            if (item.line)
+            if (item.line || item.type == "line")
             {
                 g.toolBar.append('<div class="l-bar-separator"></div>');
+                return;
+            }
+            if (item.type == "text")
+            {
+                g.toolBar.append('<div class="l-toolbar-item l-toolbar-text"><span>' + item.text || "" + '</span></div>');
                 return;
             }
             var ditem = $('<div class="l-toolbar-item l-panel-btn"><span></span><div class="l-panel-btn-l"></div><div class="l-panel-btn-r"></div></div>');

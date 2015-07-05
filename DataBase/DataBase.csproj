@@ -39,6 +39,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Dapper">
+      <HintPath>..\DLL\Dapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Dapper.Contrib">
+      <HintPath>..\DLL\Dapper.Contrib.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -114,18 +120,23 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="CacheHelp.cs" />
+    <Compile Include="ConnectionString.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="DataAccess\ConfigDA.cs" />
     <Compile Include="DataAccess\ConfigurationOperator.cs" />
-    <Compile Include="DataAccess\HomeDA.cs" />
+    <Compile Include="DataAccess\DatabaseViewAccess.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Interface\IDatabaseView.cs" />
+    <Compile Include="LoginFilterAttribute .cs" />
     <Compile Include="Models\TableModels\DataBase.cs" />
     <Compile Include="Models\ViewModels\ConnectionStrings.cs" />
     <Compile Include="Models\ViewModels\DataBaseView.cs" />
     <Compile Include="Models\ViewModels\RowsGridView.cs" />
     <Compile Include="Models\ViewModels\RowsView.cs" />
+    <Compile Include="Models\ViewModels\TableDescription.cs" />
     <Compile Include="Models\ViewModels\TablesView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -479,12 +490,7 @@
     <Content Include="Views\Home\RowsGrid.cshtml" />
     <Content Include="Views\Home\Config.cshtml" />
     <Content Include="Views\Home\Edit.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SqlHelper\DBHelper.csproj">
-      <Project>{c6850413-41b8-401d-8aaa-f3f417d62c44}</Project>
-      <Name>DBHelper</Name>
-    </ProjectReference>
+    <Content Include="Views\Home\Login.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

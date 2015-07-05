@@ -9,6 +9,7 @@ namespace DataBase.DataAccess
 {
     public class ConfigDA
     {
+
         public List<ConnectionStrings> GetConnectionStrings()
         {
             int id = 1;

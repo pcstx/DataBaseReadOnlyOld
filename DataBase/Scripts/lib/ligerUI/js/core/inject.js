@@ -1,9 +1,9 @@
 ﻿/**
-* jQuery ligerUI 1.2.2
+* jQuery ligerUI 1.2.5
 * 
 * http://ligerui.com
 *  
-* Author daomi 2013 [ gd_star@163.com ] 
+* Author daomi 2014 [ gd_star@163.com ] 
 * 
 */
 (function ($)
@@ -45,7 +45,8 @@
             Form_columns: 'Grid_columns',
             Form_condition: 'Form',
             Form_popup: 'PopupEdit',
-            Form_buttons: 'Button'
+            Form_buttons: 'Button',
+            Portal_panel: 'Panel'
         },
         /*
         config里面配置了某插件参数或者复杂属性参数的类型(动态加载、数组、默认参数)
@@ -104,6 +105,27 @@
             },
             CheckBoxList: {
                 dynamics: 'data,parms'
+            },
+            Panel: {
+            },
+            Portal: {
+                //动态
+                dynamics: 'rows,columns',
+                //数组
+                arrays: 'rows,columns',
+                //复杂属性 columns
+                columns: {
+                    dynamics: 'panels',
+                    arrays: 'panels'
+                },
+                //复杂属性 rows
+                rows: {
+                    dynamics: 'panels',
+                    arrays: 'panels'
+                },
+                toolbar: {
+                    arrays: 'items'
+                }
             }
         },
 
@@ -238,7 +260,7 @@
                     var jelement = $(this), value;
                     var defaults = $.extend({
                         onrender: null,
-                        onrendered : null 
+                        onrendered: null
                     }, liger.defaults[controlName]);
                     var options = g.getOptions({
                         defaults: defaults,

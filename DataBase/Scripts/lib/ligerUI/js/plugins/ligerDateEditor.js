@@ -1,9 +1,9 @@
 ﻿/**
-* jQuery ligerUI 1.2.2
+* jQuery ligerUI 1.2.4
 * 
 * http://ligerui.com
 *  
-* Author daomi 2013 [ gd_star@163.com ] 
+* Author daomi 2014 [ gd_star@163.com ] 
 * 
 */
 (function ($)
@@ -20,6 +20,7 @@
 
     $.ligerDefaults.DateEditor = {
         format: "yyyy-MM-dd hh:mm",
+        width : null,
         showTime: false,
         onChangeDate: false,
         absolute: true,  //选择框是否在附加到body,并绝对定位
@@ -497,6 +498,14 @@
             }
 
             g.set(p);
+            //增加鼠标在日期控件外点击隐藏日期选择框功能
+            $(document).bind("click.dateeditor", function (e)
+            {
+                if (g.dateeditor.is(":visible") && $((e.target || e.srcElement)).closest( ".l-box-dateeditor, .l-text-date" ).length == 0)
+                {
+                    g.toggleDateEditor(true);
+                }
+            });
         },
         destroy: function ()
         {
@@ -616,6 +625,25 @@
         toggleDateEditor: function (isHide)
         {
             var g = this, p = this.options;
+            //避免同一界面弹出过个菜单的问题
+            var managers = $.ligerui.find($.ligerui.controls.ComboBox);
+            for ( var i = 0, l = managers.length; i < l; i++) {
+                var o = managers[i];
+                if(o.id!=g.id){
+                    if(o.selectBox.is(":visible")!=null&&o.selectBox.is(":visible")){
+                        o.selectBox.hide();
+                    }
+                }
+            }
+            managers = $.ligerui.find($.ligerui.controls.DateEditor);
+            for ( var i = 0, l = managers.length; i < l; i++) {
+                var o = managers[i];
+                if(o.id!=g.id){
+                    if(o.dateeditor.is(":visible")!=null&&o.dateeditor.is(":visible")){
+                        o.dateeditor.hide();
+                    }
+                }
+            }
             var textHeight = g.text.height();
             g.editorToggling = true;
             if (isHide)

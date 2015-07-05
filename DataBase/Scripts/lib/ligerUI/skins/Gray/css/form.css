@@ -69,7 +69,7 @@ border-color: #F77;
 .l-trigger,.l-trigger-hover,.l-trigger-pressed
 {
     top:0px;right:0px;
-    width:16px;height:100%; border:0px; 
+    width:16px;height:100% !important;height:20px; border:0px; 
     background:none;
 }  
 /* 下拉框/日期 取消选择 */
@@ -135,7 +135,7 @@ background:#F0F0F0;
     display:none;
     position:absolute; padding:0px;  
     border:1px solid #D0D0D0; background:white;
-    width:130px; height:120px;
+    width:130px; height:auto;
     margin-top:1px;
     z-index:9300; font-size:12px; line-height:18px;
 }
@@ -143,7 +143,7 @@ background:#F0F0F0;
 {
     margin-top:0px;
 }
-.l-box-select-inner{ margin:0; padding:0; width:100%;overflow:auto; height:100%;color:#333;}
+.l-box-select-inner{ margin:0; padding:0; width:100%;overflow:auto; height:120px;color:#333;}
 .l-box-select-inner .l-box-select-table{margin:0; padding:0; width:100%; }
 .l-box-select .l-table-nocheckbox td:hover,.l-box-select .l-table-nocheckbox td.l-over{ background-color:#E7EDF8; cursor:pointer;}
 .l-box-select .l-table-nocheckbox td.l-selected{ background-color:#DFE8F6;}

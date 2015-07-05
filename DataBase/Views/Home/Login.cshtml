@@ -1,0 +1,53 @@
+﻿
+@{
+    ViewBag.Title = "登陆";
+}
+
+<h2>登录</h2> 
+<form role="form" onsubmit="return false;"> 
+    <div class="form-group">
+        <label for="connectionStringName">服务器名称</label>
+        <input type="text" class="form-control" id="server" name="server" placeholder="名称">
+    </div>
+    <div class="form-group">
+        <label for="uid">登录名</label>
+        <input type="text" class="form-control" id="uid" name="uid" placeholder="登录名">
+    </div>
+    <div class="form-group">
+        <label for="password">密码</label>
+        <input type="password" class="form-control" id="password" name="password" placeholder="密码">
+    </div>
+    <div class="form-group">
+        <label for="connectionStringName"></label>
+        <input type="submit" value="登录" id="login" class="btn btn-primary" /> 
+    </div>
+</form>
+
+@section scripts{
+ <script>
+     $(function () {
+         $("#login").click(login);
+     })
+
+     var login = function () {
+         var server = $("#server").val();
+         var uid = $("#uid").val();
+         var password = $("#password").val();
+
+         $.ajax({
+             url: "@Url.Action("Login","Home")",
+             type:"post",
+             data:"server="+server+"&uid="+uid+"&password="+password,
+             success:function(data){
+                 if (data == "1") {
+                     window.location.href = "@Url.Action("Index", "Home")";
+                 }
+                 else {
+                     alert("无法连接到数据库服务器!");
+                 }
+             }
+         });
+
+     } 
+ </script>
+    }

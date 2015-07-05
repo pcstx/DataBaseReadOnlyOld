@@ -1,9 +1,9 @@
 ﻿/**
-* jQuery ligerUI 1.2.2
+* jQuery ligerUI 1.2.4
 * 
 * http://ligerui.com
 *  
-* Author daomi 2013 [ gd_star@163.com ] 
+* Author daomi 2014 [ gd_star@163.com ] 
 * 
 */
 (function ($)
@@ -25,7 +25,9 @@
         leftWidth: 110,
         centerWidth: 300,
         rightWidth: 170,
-        InWindow: true,     //是否以窗口的高度为准 height设置为百分比时可用
+        centerBottomHeight: 100,
+        allowCenterBottomResize: true, 
+        inWindow: true,     //是否以窗口的高度为准 height设置为百分比时可用
         heightDiff: 0,     //高度补差
         height: '100%',      //高度
         onHeightChanged: null,
@@ -40,13 +42,13 @@
         space: 3, //间隔 
         onEndResize: null,          //调整大小结束事件
         minLeftWidth: 80,            //调整左侧宽度时的最小允许宽度
-        minRightWidth: 80           //调整右侧宽度时的最小允许宽度
+        minRightWidth: 80           //调整右侧宽度时的最小允许宽度 
     };
 
     $.ligerMethos.Layout = {};
 
     $.ligerui.controls.Layout = function (element, options)
-    {
+    { 
         $.ligerui.controls.Layout.base.constructor.call(this, element, options);
     };
     $.ligerui.controls.Layout.ligerExtend($.ligerui.core.UIComponent, {
@@ -61,6 +63,13 @@
         _extendMethods: function ()
         {
             return $.ligerMethos.Layout;
+        },
+        _init: function()
+        {
+            $.ligerui.controls.Layout.base._init.call(this);
+
+            var g = this, p = this.options;
+            if (p.InWindow != null && p.inWindow == null) p.inWindow = p.InWindow; //旧版本命名错误纠正
         },
         _render: function ()
         {
@@ -122,6 +131,12 @@
                     g.left.content.attr("title", "");
                     $(".l-layout-header-inner", g.left.header).html(lefttitle);
                 }
+                //set title 
+                if (g.left.content.attr("hidetitle"))
+                {
+                    g.left.content.attr("title", "");
+                    g.left.header.remove();
+                }
                 //set width
                 g.leftWidth = p.leftWidth;
                 if (g.leftWidth)
@@ -142,11 +157,43 @@
                     g.center.prepend(g.center.header);
                     g.center.header.html(centertitle);
                 }
+                if (g.center.content.attr("hidetitle"))
+                {
+                    g.center.content.attr("title", "");
+                    g.center.header.remove();
+                }
                 //set width
                 g.centerWidth = p.centerWidth;
                 if (g.centerWidth)
-                    g.center.width(g.centerWidth);
-            }
+                    g.center.width(g.centerWidth); 
+
+                //centerBottom
+                if ($("> div[position=centerbottom]", g.layout).length > 0)
+                {
+                    g.centerBottom = $("> div[position=centerbottom]", g.layout).wrap('<div class="l-layout-centerbottom" ></div>').parent();
+                    g.centerBottom.content = $("> div[position=centerbottom]", g.centerBottom);
+                    g.centerBottom.content.addClass("l-layout-content");
+                    //set title
+                    var centertitle = g.centerBottom.content.attr("title");
+                    if (centertitle)
+                    {
+                        g.centerBottom.content.attr("title", "");
+                        g.centerBottom.header = $('<div class="l-layout-header"></div>');
+                        g.centerBottom.prepend(g.centerBottom.header);
+                        g.centerBottom.header.html(centertitle);
+                    }
+                    if (g.centerBottom.content.attr("hidetitle"))
+                    {
+                        g.centerBottom.content.attr("title", "");
+                        if (g.centerBottom.header)
+                        {
+                            g.centerBottom.header.remove();
+                        }
+                    }
+                    if (g.centerWidth)
+                        g.centerBottom.width(g.centerWidth);
+                }
+            } 
             //right
             if ($("> div[position=right]", g.layout).length > 0)
             {
@@ -166,6 +213,11 @@
                 {
                     g.right.content.attr("title", "");
                     $(".l-layout-header-inner", g.right.header).html(righttitle);
+                }
+                if (g.right.content.attr("hidetitle"))
+                {
+                    g.right.content.attr("title", "");
+                    g.right.header.remove();
                 }
                 //set width
                 g.rightWidth = p.rightWidth;
@@ -382,6 +434,16 @@
                     g._start('bottomresize', e);
                 });
             }
+            if (g.centerBottom && p.allowCenterBottomResize)
+            {
+                g.centerBottomDropHandle = $("<div class='l-layout-drophandle-centerbottom'></div>");
+                g.layout.append(g.centerBottomDropHandle);
+                g.centerBottomDropHandle.show();
+                g.centerBottomDropHandle.mousedown(function (e)
+                {
+                    g._start('centerbottomresize', e);
+                });
+            }
             g.draggingxline = $("<div class='l-layout-dragging-xline'></div>");
             g.draggingyline = $("<div class='l-layout-dragging-yline'></div>");
             g.mask = $("<div class='l-dragging-mask'></div>");
@@ -406,11 +468,19 @@
             {
                 g.bottomDropHandle.css({ top: parseInt(g.bottom.css('top')) - p.space, width: g.bottom.width() });
             }
+            if (g.centerBottomDropHandle)
+            {
+                g.centerBottomDropHandle.css({
+                    top: parseInt(g.centerBottom.css('top')) - p.space,
+                    left: parseInt(g.center.css('left')),
+                    width: g.center.width()
+                });
+            }
         },
         _onResize: function ()
         { 
             var g = this, p = this.options;
-            var oldheight = g.layout.height();
+            var oldheight = g.layout.height(); 
             //set layout height 
             var h = 0;
             var windowHeight = $(window).height();
@@ -418,7 +488,7 @@
             if (typeof (p.height) == "string" && p.height.indexOf('%') > 0)
             {
                 var layoutparent = g.layout.parent();
-                if (p.InWindow || layoutparent[0].tagName.toLowerCase() == "body")
+                if (p.inWindow || layoutparent[0].tagName.toLowerCase() == "body")
                 {
                     parentHeight = windowHeight;
                     parentHeight -= parseInt($('body').css('paddingTop'));
@@ -429,7 +499,7 @@
                     parentHeight = layoutparent.height();
                 }
                 h = parentHeight * parseFloat(p.height) * 0.01;
-                if (p.InWindow || layoutparent[0].tagName.toLowerCase() == "body")
+                if (p.inWindow || layoutparent[0].tagName.toLowerCase() == "body")
                     h -= (g.layout.offset().top - parseInt($('body').css('paddingTop')));
             }
             else
@@ -523,11 +593,13 @@
                     }
                 }
                 g.center.css({ left: g.centerLeft });
-                g.center.width(g.centerWidth);
-                g.center.height(g.middleHeight);
+                g.centerWidth >= 0 && g.center.width(g.centerWidth);
+                g.middleHeight >= 0 && g.center.height(g.middleHeight);
                 var contentHeight = g.middleHeight;
                 if (g.center.header) contentHeight -= g.center.header.height();
-                g.center.content.height(contentHeight);
+                contentHeight >= 0 && g.center.content.height(contentHeight);
+                 
+                g._updateCenterBottom(true);
             }
             if (g.left)
             {
@@ -576,6 +648,26 @@
             g._setDropHandlePosition();
 
         },
+        //加了centerBottom以后，需要对centerBottom进行刷新处理一下
+        _updateCenterBottom: function (isHeightResize)
+        {
+            var g = this, p = this.options;
+            if (g.centerBottom)
+            {
+                if (isHeightResize)
+                {
+                    var centerBottomHeight = g.centerBottomHeight || p.centerBottomHeight;
+                    g.centerBottom.css({ left: g.centerLeft });
+                    g.centerWidth >= 0 && g.centerBottom.width(g.centerWidth);
+                    var centerHeight = g.center.height(), centerTop = parseInt(g.center.css("top"));
+                    g.centerBottom.height(centerBottomHeight)
+                    g.centerBottom.css({ top: centerTop + centerHeight - centerBottomHeight + 2 });
+                    g.center.height(centerHeight - centerBottomHeight - 2);
+                }
+                var centerLeft = parseInt(g.center.css("left"));
+                g.centerBottom.width(g.center.width()).css({ left: centerLeft });
+            }
+        },
         _start: function (dragtype, e)
         {
             var g = this, p = this.options;
@@ -592,6 +684,13 @@
                 g.yresize = { startY: e.pageY };
                 g.draggingxline.css({ top: e.pageY - g.layout.offset().top, width: g.layout.width() }).show();
                 $('body').css('cursor', 'row-resize'); 
+                g.mask.height(g.layout.height()).removeClass("l-layout-xmask").addClass("l-layout-ymask").show();
+            }
+            else if (dragtype == 'centerbottomresize')
+            {
+                g.yresize = { startY: e.pageY };
+                g.draggingxline.css({ top: e.pageY - g.layout.offset().top, width: g.layout.width() }).show();
+                $('body').css('cursor', 'row-resize');
                 g.mask.height(g.layout.height()).removeClass("l-layout-xmask").addClass("l-layout-ymask").show();
             }
             else
@@ -647,7 +746,7 @@
                     if (g.center)
                         g.center.width(g.center.width() - g.xresize.diff).css({ left: parseInt(g.center.css('left')) + g.xresize.diff });
                     else if (g.right)
-                        g.right.width(g.left.width() - g.xresize.diff).css({ left: parseInt(g.right.css('left')) + g.xresize.diff });
+                        g.right.width(g.left.width() - g.xresize.diff).css({ left: parseInt(g.right.css('left')) + g.xresize.diff }); 
                 }
                 else if (g.dragtype == 'rightresize')
                 {
@@ -663,6 +762,7 @@
                     else if (g.left)
                         g.left.width(g.left.width() + g.xresize.diff);
                 }
+                g._updateCenterBottom();
             }
             else if (g.yresize && g.yresize.diff != undefined)
             {
@@ -683,6 +783,7 @@
                         g.right.css({ top: g.middleTop }).height(g.middleHeight);
                         g.rightCollapse.css({ top: g.middleTop }).height(g.middleHeight);
                     }
+                    g._updateCenterBottom(true);
                 }
                 else if (g.dragtype == 'bottomresize')
                 {
@@ -701,6 +802,16 @@
                         g.right.height(g.middleHeight);
                         g.rightCollapse.height(g.middleHeight);
                     }
+                    g._updateCenterBottom(true);
+                }
+                else if (g.dragtype == 'centerbottomresize')
+                {
+                    g.centerBottomHeight = g.centerBottomHeight || p.centerBottomHeight;
+                    g.centerBottomHeight -= g.yresize.diff; 
+                    var centerBottomTop = parseInt(g.centerBottom.css("top"));
+                    g.centerBottom.css("top" , centerBottomTop + g.yresize.diff);
+                    g.centerBottom.height(g.centerBottom.height() - g.yresize.diff);    
+                    g.center.height(g.center.height() + g.yresize.diff); 
                 }
             }
             g.trigger('endResize', [{

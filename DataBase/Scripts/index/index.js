@@ -15,7 +15,7 @@ $(function () {
     //Tab
     $("#framecenter").ligerTab({ height: height }); 
     //面板
-    //$("#accordion1").ligerAccordion({ height: height - 24, speed: null });
+    $("#accordion1").ligerAccordion({ height: height - 24, speed: null });
 
     $(".l-link").hover(function () {
         $(this).addClass("l-link-over");
@@ -38,7 +38,7 @@ $(function () {
     $("#tree1").ligerTree({
         checkbox: false,
          slide: true,
-         nodeWidth: 120,
+         nodeWidth: 250,
         btnClickToToggleOnly :false,
        // treeLine: false,
         idFieldName: 'id', 
@@ -91,7 +91,7 @@ function f_addTab(tabid, text, url) {
 }
 
 function SelectNode(node) {
-    if (node.data.type == "database") return;
+    if (node.data&&node.data.type == "database") return;
     var tabid = $(node.target).attr("tabid");
     if (!tabid) {
         tabid = new Date().getTime();

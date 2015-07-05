@@ -23,6 +23,12 @@
 .l-tab-links-item-close{background:url(../images/layout/icon-close.gif);}
 .l-tab-links-item-close-over{background:url(../images/layout/icon-close-over.gif);}
     
-/* -----------------------
+ /* -----------------------
    * easytab *
-* ----------------------- */ 
+* ----------------------- */
+.l-easytab .l-easytab-header li span{ background: #f4f4f4;border:1px solid #CCC; color:#333;border-bottom:none;}
+.l-easytab .l-easytab-header li span.l-over{background:#f4f4f4;border:1px solid #CCC;border-bottom:none;}
+.l-easytab .l-easytab-header li span.l-selected{ background:none; background:white; border-top:3px solid #CCC;color:#333; border-left:1px solid  #CCC;border-right:1px solid  #CCC; }
+.l-easytab .l-easytab-panelbox {
+    border: 1px solid #CCC;
+}

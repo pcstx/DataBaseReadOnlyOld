@@ -80,7 +80,7 @@
  /* --------------
    *   dialog  *
 * ------------ */ 
-.l-dialog{ position:absolute;z-index: 10000; display:none;}
+.l-dialog{ position:absolute;z-index: 10000;  padding:0; margin:0;font-size:12px; border: 1px solid #BED5F3;border-radius: 5px;box-shadow: 0 1px 6px rgba(99,99,99,.3);} 
 .l-dialog table{ table-layout:auto;}
 .l-dialog-fixed
 {
@@ -92,24 +92,34 @@
 .l-dialog{ padding:0; margin:0;font-size:12px; } 
 .l-dialog td,.l-dialog tr,.l-dialog td div{font-size:12px; } 
 .l-dialog-cc{ background:white;}
-.l-dialog-tl,.l-dialog-tr,.l-dialog-bl,.l-dialog-br,.l-dialog-cl,.l-dialog-cr{width:6px;} 
+.l-dialog-tl,.l-dialog-tr,.l-dialog-bl,.l-dialog-br,.l-dialog-cl,.l-dialog-cr{width:0px; background:none;padding:0;margin:0;} 
 .l-dialog-tl,.l-dialog-tc,.l-dialog-tr{ height:26px;}
-.l-dialog-bl,.l-dialog-bc,.l-dialog-br{ height:6px;}
+.l-dialog-bl,.l-dialog-bc,.l-dialog-br{ height:0px;background:none;padding:0;margin:0;}
 
-.l-dialog-tl{background:url('../images/win/dialog.gif') no-repeat;background-position:-12px 0px;}
-.l-dialog-tc{background:url('../images/win/dialog-tc.gif') repeat-x;}
-.l-dialog-tr{background:url('../images/win/dialog.gif') no-repeat;background-position:-18px 0px;}
-.l-dialog-bl{background:url('../images/win/dialog.gif') no-repeat;background-position:-12px -26px;}
-.l-dialog-bc{background:url('../images/win/dialog-bc.gif') repeat-x;}
-.l-dialog-br{background:url('../images/win/dialog.gif') no-repeat;background-position:-18px -26px;}
-.l-dialog-cl{background:url('../images/win/dialog.gif') repeat-y;}
-.l-dialog-cr{background:url('../images/win/dialog.gif') repeat-y; background-position:-6px 0px;}
+ 
+.l-dialog-tl{ background:none;border-bottom: 1px solid #f5f5f5;}
+.l-dialog-tc{font-size: 14px;font-weight: bold;height: 30px;line-height: 30px;background: -webkit-gradient(linear, 0 0, 0 100%, from(#EFF5FE), to(#D6E4F4)); padding-left: 10px;background: -o-linear-gradient(top, #EFF5FE, #D6E4F4);_background:#EFF5FE;
+background: -ms-linear-gradient(top, #EFF5FE 0%,#D6E4F4 100%);
+background: linear-gradient(top, #EFF5FE, #D6E4F4);background: -moz-linear-gradient(top, #EFF5FE, #D6E4F4);
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#EFF5FE', endColorstr='#D6E4F4');
+
+}
+.l-dialog-tr{background:none;border-bottom: 1px solid #f5f5f5;}
+.l-dialog-bl{background:none;}
+.l-dialog-bc{background:none;}
+.l-dialog-br{background:none;}
+.l-dialog-cl{background:none;}
+.l-dialog-cr{background:none;}
+.l-dialog-cl{background:none;}
+.l-dialog-cl,.l-dialog-cc,.l-dialog-cr{border-top: 1px solid #BED5F3;}
+
+
 
 .l-dialog-winbtns{ position:absolute;right:0px; top:4px; height:16px;}
 .l-dialog-winbtn{background:url('../images/win/dialog-winbtns.gif') no-repeat;cursor:pointer;overflow:hidden; width:17px; height:16px; float:right; margin-right:4px;}
 
-.l-dialog-close{background-image:url('../images/win/dialog.gif');background-position:-24px 0px;}
-.l-dialog-close-over{background-position:-24px -16px;}
+.l-dialog-close{background-position:-85px 0px;}
+.l-dialog-close-over{background-position:-85px -16px;}
 .l-dialog-close-disabled{background-position:-24px -32px; cursor:default;}
 .l-dialog-min{ background-position:0px 0px;}
 .l-dialog-min-over{background-position:0px -16px;}
@@ -129,13 +139,12 @@
 .l-dialog-extend-disabled{background-position:-68px -32px;cursor:default;}
 
 .l-dialog-tc-inner{ position:relative;height:26px; line-height:26px; width:100%;  }
-.l-dialog-title {  color:#FFF; font-weight:700; text-shadow:0 0px 3px rgba(0, 0, 0, 0.7); padding-left:20px; padding-right:20px; text-align:left; padding-top:0px;}
-.l-dialog-tc-inner .l-dialog-icon{ position:absolute; left:3px; top:8px; width:11px; height:11px; overflow:hidden; background:url('../images/win/dialog.gif');background-position:-12px -32px; } 
+.l-dialog-title {  color:#000;font-weight:bold; font-weight:700; text-shadow:none; padding-left:3px; padding-right:20px; text-align:left; padding-top:0px;} 
 
 .l-dialog-content{ padding-left:18px; padding-top:14px;padding-bottom:12px; overflow:auto;} 
 .l-dialog-content-noimage {padding-left:6px; padding-top:10px;padding-bottom:10px;}
 .l-dialog-content-dragging iframe { }
-.l-dialog-win .l-dialog-content{ padding-top:3px; padding-bottom:3px;}
+.l-dialog-win .l-dialog-content{  }
 .l-dialog-content-nopadding{ padding:0;}
 .l-dialog-content iframe {border: none;width: 100%;height: 100%;}
 .l-dialog-image{ width:48px; height:48px; overflow:hidden; display:none; position:absolute; top:10px; left:10px;background:url('../images/win/dialog-icons.gif') no-repeat;}
@@ -144,31 +153,90 @@
 .l-dialog-image-question{ background-position:0px -144px; }
 .l-dialog-image-warn{ background-position:0px -96px; }
 
+.l-dialog-image-loading{ background:white url('../images/common/loading2.gif') no-repeat center; width:28px; height:28px;}
 
-.l-dialog-buttons{ height:30px; line-height:30px; position:relative;margin-top:4px; background:#f6f6f6; padding-top:6px; border-top:1px solid #ded; overflow:hidden; margin-bottom:2px;}
+.l-dialog-buttons{ height:30px; line-height:30px; position:relative;margin-top:4px;padding-top:6px; border-top:1px solid #D3E3F7; overflow:hidden; margin-bottom:2px;}
 .l-dialog-buttons-inner{}
 
-.l-dialog-btn,.l-dialog-btn-over,.l-dialog-btn-l,.l-dialog-btn-r{background-image:url('../images/win/box.gif');}
-.l-dialog-btn,.l-dialog-btn-over{background-repeat:repeat-x;}
-.l-dialog-btn-l,.l-dialog-btn-r{background-repeat:no-repeat;}
-
-
-.l-dialog-btn{ height:24px; overflow:hidden; width:70px; line-height:24px; cursor:pointer; position:relative; float:right; margin-right:5px;}
+.l-dialog-btn-l,.l-dialog-btn-r{display:none;}
+.l-dialog-buttons
+{
+    padding: 4px 8px;
+    text-align: right;
+    white-space: nowrap;
+    border-top: 1px solid #ececec;
+    border-radius: 0 0 2px 2px;
+    background: #fcfcfc;
+    background: -moz-linear-gradient(top, #fcfcfc, #f4f4f4);
+    background: -webkit-gradient(linear, 0 0, 0 100%, from(#fcfcfc), to(#f4f4f4));
+    background: -o-linear-gradient(top, #fcfcfc, #f4f4f4);
+    background: -ms-linear-gradient(top, #fcfcfc 0%,#f4f4f4 100%);
+    background: linear-gradient(top, #fcfcfc, #f4f4f4);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fcfcfc', endColorstr='#f4f4f4');
+}
+.l-dialog-btn{
+    display: inline-block;
+    zoom: 1;
+    margin-left: 10px;
+    height: 24px;
+    border: 1px solid #c1c1c1;
+    border-radius: 2px;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.15);
+    background: #ffffff;
+    background: -moz-linear-gradient(top, #ffffff, #f4f4f4);
+    background: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#f4f4f4));
+    background: -o-linear-gradient(top, #ffffff, #f4f4f4);
+    background: -ms-linear-gradient(top, #ffffff 0%,#f4f4f4 100%);
+    background: linear-gradient(top, #ffffff, #f4f4f4);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#f4f4f4');
+    font: 12px 宋体b8b\4f53;
+    color: #555;
+    vertical-align: middle;
+    cursor: pointer;
+}
+.l-dialog-btn-highlight {
+border: 1px solid #3279a0;
+box-shadow: 0 1px 1px rgba(0,0,0,0.3);
+background: #337fa9;
+background: -moz-linear-gradient(top, #4994be, #337fa9);
+background: -webkit-gradient(linear, 0 0, 0 100%, from(#4994be), to(#337fa9));
+background: -o-linear-gradient(top, #4994be, #337fa9);
+background: -ms-linear-gradient(top, #4994be 0%,#337fa9 100%);
+background: linear-gradient(top, #4994be, #337fa9);
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#4994be', endColorstr='#337fa9');
+font-weight: bold;
+color: #fff;
+text-shadow: 0 2px 2px rgba(0,0,0,0.22);
+}
+ .l-dialog-btn:hover
+{
+    background: #f4f4f4;
+    color: #555;
+}
+    .l-dialog-btn-highlight:hover
+    {
+        filter: progid:DXImageTransform.Microsoft.Gradient(enabled=false);
+        background: #3286b4;
+        color: #fff;
+    }
+.l-dialog-content-frame {
+    overflow:hidden;
+}
+.l-dialog-btn{ height:25px; overflow:hidden; width:70px; line-height:25px; cursor:pointer; position:relative; float:right; margin-right:5px;}
 
 .l-dialog-btn-inner{ text-align:center;}
-
 
 
 .l-dialog-inputtext{ width:280px; border:1px solid #0099CC; line-height:23px; height:25px;}
 .l-dialog-textarea{ width:280px; border:1px solid #0099CC;  height:80px;}
 
-.l-messagebox-btn,.l-dialog-btn{background-position:0px 0px;}
-.l-messagebox-btn-over,.l-dialog-btn-over{ background-position:0px -51px;}
+.l-messagebox-btn {background-position:0px 0px;}
+.l-messagebox-btn-over { background-position:0px -51px;}
  
-.l-messagebox-btn-l,.l-dialog-btn-l{ height:24px; position:absolute; left:0px; top:0px; width:4px;background-position:0px -24px;}
-.l-messagebox-btn-over .l-messagebox-btn-l,.l-dialog-btn-over .l-dialog-btn-l{background-position:0px -75px;}
-.l-messagebox-btn-r,.l-dialog-btn-r{ height:24px; position:absolute; right:0px; top:0px; width:4px;background-position:-4px -24px;}
-.l-messagebox-btn-over .l-messagebox-btn-r,.l-dialog-btn-over .l-dialog-btn-r{background-position:-4px -75px;}
+.l-messagebox-btn-l { height:24px; position:absolute; left:0px; top:0px; width:4px;background-position:0px -24px;}
+.l-messagebox-btn-over .l-messagebox-btn-l {background-position:0px -75px;}
+.l-messagebox-btn-r { height:24px; position:absolute; right:0px; top:0px; width:4px;background-position:-4px -24px;}
+.l-messagebox-btn-over .l-messagebox-btn-r {background-position:-4px -75px;}
 
 
 /* 选择窗口,填充模式,隐藏滚动条 */

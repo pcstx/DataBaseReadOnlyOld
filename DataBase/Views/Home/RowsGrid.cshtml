@@ -12,15 +12,13 @@
     <link href="~/Content/index.css" rel="stylesheet" />
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>
     <script src="~/Scripts/lib/ligerUI/js/ligerui.all.js"></script>    
-    <script type="text/javascript">
-
-        //var DepartmentList = DepartmentData.Rows;
-        var sexData = [{ Sex: 1, text: '男' }, { Sex: 2, text: '女' }];
+    <script type="text/javascript"> 
         $(f_initGrid);
         var manager, g;
-        var rowUrl = location.protocol + "//" + location.host + '/Home/RowsGridJson/';
+        var rowUrl = "@Url.Action("RowsGridJson","Home")"; // location.protocol + "//" + location.host + '/Home/RowsGridJson/';
         function f_initGrid() {
-            g = manager = $("#maingrid").ligerGrid({ 
+            g = manager = $("#maingrid").ligerGrid({
+                pageSize:50, height:'100%',
                 columns: [
                 { display: '序号', name: 'id', width: 50, type: 'int', frozen: true },
                 {
@@ -68,23 +66,7 @@
             manager.deleteSelectedRow();
         }
         var newrowid = 100;
-        function addNewRow() {
-            var row = manager.getSelectedRow();
-            //参数1:rowdata(非必填)
-            //参数2:插入的位置 Row Data
-            //参数3:之前或者之后(非必填)
-            manager.addRow({
-                DepartmentID: 3,
-                DepartmentName: '销售部',
-                RealName: "分为" + newrowid,
-                ID: newrowid++,
-                Sex: 1,
-                Age: 25,
-                IncomeDay: new Date(1306108800000),
-                Phone: "2343434",
-                Address: "wwrere4"
-            }, row, document.getElementById("chkbefore").checked);
-        }
+        
         function getSelected() {
             var row = manager.getSelectedRow();
             if (!row) { alert('请选择行'); return; }
@@ -98,8 +80,10 @@
 
 </head>
 <body>
-    <div>表名：</div>
-    <div>描述：</div>
+    <div style="margin:5px;">
+        <h4>表名：@ViewBag.TableName</h4>
+        <h4>描述：@ViewBag.Desc</h4>
+    </div>
     <div id="maingrid"></div>
 </body>
 </html>
