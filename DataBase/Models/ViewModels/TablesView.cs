@@ -26,5 +26,7 @@ namespace DataBase.Models.ViewModels
         public string Note { get; set; }
         public string databaseName { get; set; }
         public string type { get; set; }
+
+        public string connName { get; set; }
     }
 }

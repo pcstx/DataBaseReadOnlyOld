@@ -48,7 +48,7 @@
                 {  
                 }, 
                 enabledEdit: true, 
-                url: rowUrl + "/@(ViewBag.dbName)/@(ViewBag.TableName)", 
+                url: rowUrl + "/@(ViewBag.dbName)/@(ViewBag.TableName)?connectionStringName=@(ViewBag.ConnName)", 
                 width: '100%'
             });
         }

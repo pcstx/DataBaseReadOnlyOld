@@ -10,14 +10,14 @@ namespace DataBase.DataAccess
 {
     public class DatabaseViewAccess:IDatabaseView
     {
-        public IEnumerable<DataBaseView> GetDatabase()
+        public IEnumerable<DataBaseView> GetDatabase(string connectionStringName)
         {
             IEnumerable<DataBaseView> list_database = new List<DataBaseView>();
             try
             {
-                string dbSQL = "select dbid as id,name,crdate as createDate,type='database' from master..sysdatabases with(nolock) where dbid > 4 --用户库";
+                string dbSQL = "select dbid as id,name,crdate as createDate,type='database',connName='"+connectionStringName+@"' from master..sysdatabases with(nolock) where dbid > 4 order by name;--用户库";
             
-                using (IDbConnection conn = ConnectionString.GetConnection("SqlServerHelper"))
+                using (IDbConnection conn = ConnectionString.GetConnection(connectionStringName))
                 {
                     list_database = conn.Query<DataBaseView>(dbSQL);
                     return list_database;
@@ -29,21 +29,21 @@ namespace DataBase.DataAccess
             }
         }
 
-        public IEnumerable<TablesView> GetTables(string dbName)
+        public IEnumerable<TablesView> GetTables(string dbName, string connectionStringName)
         {
             IEnumerable<TablesView> list_tables = new List<TablesView>();
             try
             {
                 string tableSQL = @"select t.object_id as id,t.name as name,t.create_date as createdate,
-                                    t.modify_date as modifydate,s.value as note,databaseName='{0}', type='table'
+                                    t.modify_date as modifydate,s.value as note,databaseName='{0}', type='table',connName='{1}'
                                     from {0}.sys.objects t with(nolock)
                                     left join {0}.sys.extended_properties s with(nolock) on t.object_id=s.major_id and s.minor_id=0  
                                     where [type] = 'u' and is_ms_shipped=0
                                     order by name;";
 
                 dbName=dbName.Replace('\'',' ');
-                tableSQL = string.Format(tableSQL, dbName);
-                using (IDbConnection conn = ConnectionString.GetConnection("SqlServerHelper"))
+                tableSQL = string.Format(tableSQL, dbName,connectionStringName);
+                using (IDbConnection conn = ConnectionString.GetConnection(connectionStringName))
                 {
                      list_tables = conn.Query<TablesView>(tableSQL);
                     return list_tables;
@@ -55,7 +55,7 @@ namespace DataBase.DataAccess
             }
         }
 
-        public IEnumerable<RowsView> GetRows(string dbName, string TableName)
+        public IEnumerable<RowsView> GetRows(string dbName, string TableName, string connectionStringName)
         {
             IEnumerable<RowsView> list_rows = new List<RowsView>();
             try
@@ -85,7 +85,7 @@ namespace DataBase.DataAccess
 
                 rowSQL = string.Format(rowSQL, dbName);
 
-                using (IDbConnection conn = ConnectionString.GetConnection("SqlServerHelper"))
+                using (IDbConnection conn = ConnectionString.GetConnection(connectionStringName))
                 {
                     list_rows = conn.Query<RowsView>(rowSQL, new { tableName = TableName });
                     return list_rows;
@@ -97,7 +97,7 @@ namespace DataBase.DataAccess
             }
         }
 
-        public IEnumerable<RowsView> GetRowsPaging(string dbName, string TableName, int pageSize, int page)
+        public IEnumerable<RowsView> GetRowsPaging(string dbName, string TableName, int pageSize, int page, string connectionStringName)
         {
             IEnumerable<RowsView> list_rows = new List<RowsView>();
             try
@@ -131,7 +131,7 @@ namespace DataBase.DataAccess
 
                 rowSQL = string.Format(rowSQL, dbName, pageSize, page);
 
-                using (IDbConnection conn = ConnectionString.GetConnection("SqlServerHelper"))
+                using (IDbConnection conn = ConnectionString.GetConnection(connectionStringName))
                 {
                     list_rows = conn.Query<RowsView>(rowSQL, new {tableName=TableName });
                     return list_rows;
@@ -143,7 +143,7 @@ namespace DataBase.DataAccess
             }
         }
 
-        public int GetRowsCount(string dbName, string TableName)
+        public int GetRowsCount(string dbName, string TableName, string connectionStringName)
         {
             try
             {
@@ -153,7 +153,7 @@ namespace DataBase.DataAccess
                 dbName = dbName.Replace('\'', ' ');
                 rowSQL = string.Format(rowSQL, dbName);
 
-                using (IDbConnection conn = ConnectionString.GetConnection("SqlServerHelper"))
+                using (IDbConnection conn = ConnectionString.GetConnection(connectionStringName))
                 {
                     int rowCount = conn.ExecuteScalar<int>(rowSQL, new { tableName=TableName });
                     return rowCount;
@@ -165,7 +165,7 @@ namespace DataBase.DataAccess
             }
         }
 
-        public string GetTableDescription(string dbName,string tableName)
+        public string GetTableDescription(string dbName, string tableName, string connectionStringName)
         {
             string desc = "";
             try
@@ -177,7 +177,7 @@ namespace DataBase.DataAccess
                 dbName = dbName.Replace('\'', ' ');
                 sql = string.Format(sql, dbName);
 
-                using (IDbConnection conn = ConnectionString.GetConnection("SqlServerHelper"))
+                using (IDbConnection conn = ConnectionString.GetConnection(connectionStringName))
                 {
                     desc = conn.ExecuteScalar<string>(sql, new { tableName=tableName }); 
                 }
@@ -197,7 +197,7 @@ namespace DataBase.DataAccess
         /// <param name="rowName"></param>
         /// <param name="Description"></param>
         /// <returns></returns>
-        public int EditDescription(string dbName, string TableName, string rowName, string Description)
+        public int EditDescription(string dbName, string TableName, string rowName, string Description, string connectionStringName)
         {
             try
             {
@@ -220,7 +220,7 @@ namespace DataBase.DataAccess
                 dbName = dbName.Replace('\'', ' ');
                 sql = string.Format(sql, dbName, TableName, rowName, Description);
 
-                using (IDbConnection conn = ConnectionString.GetConnection("SqlServerHelper"))
+                using (IDbConnection conn = ConnectionString.GetConnection(connectionStringName))
                 {
                     int result = conn.Execute(sql);
                     return result;

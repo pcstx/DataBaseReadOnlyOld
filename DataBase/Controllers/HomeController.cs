@@ -15,8 +15,10 @@ namespace DataBase.Controllers
 
         [LoginFilterAttribute]
         public ActionResult Index()
-        { 
-            return View();
+        {
+            List<string> list_connStr = ConnectionString.GetConnectionStringCount();
+            
+            return View(list_connStr);
         }
 
         /// <summary>
@@ -24,16 +26,16 @@ namespace DataBase.Controllers
         /// </summary>
         /// <returns></returns>
         [LoginFilterAttribute]
-        public ActionResult DataBaseJson()
+        public ActionResult DataBaseJson(string connectionStringName = "SqlServerHelper")
         {
             IEnumerable<DataBase.Models.ViewModels.DataBaseView> list_database = null;
-            string connectionString = ConnectionString.connectionString("SqlServerHelper");
+            string connectionString = ConnectionString.connectionString(connectionStringName);
             if (!string.IsNullOrWhiteSpace(connectionString))
             {
                 list_database = CacheHelper.GetCache(connectionString) as IEnumerable<DataBase.Models.ViewModels.DataBaseView>;
                 if (list_database == null || list_database.Count() <= 0)
                 {
-                    list_database = homeDA.GetDatabase();
+                    list_database = homeDA.GetDatabase(connectionStringName);
                     CacheHelper.SetCache(connectionString, list_database,TimeSpan.FromHours(2));
                 }
             } 
@@ -46,16 +48,16 @@ namespace DataBase.Controllers
         /// <param name="dbName">数据库名称</param>
         /// <returns></returns>
         [LoginFilterAttribute]
-        public ActionResult TablesJson(string dbName)
+        public ActionResult TablesJson(string dbName, string connectionStringName = "SqlServerHelper")
         {
               IEnumerable<TablesView> list_tables = null;
-              string connectionString = ConnectionString.connectionString("SqlServerHelper");
+              string connectionString = ConnectionString.connectionString(connectionStringName);
               if (!string.IsNullOrWhiteSpace(connectionString))
               {
                   list_tables = CacheHelper.GetCache(connectionString + "_Table_" + dbName) as IEnumerable<TablesView>;
                   if (list_tables == null || list_tables.Count() <= 0)
                   {
-                      list_tables = homeDA.GetTables(dbName);
+                      list_tables = homeDA.GetTables(dbName,connectionStringName);
                       CacheHelper.SetCache(connectionString + "_Table_" + dbName, list_tables, TimeSpan.FromHours(2));
                   }
               } 
@@ -69,35 +71,36 @@ namespace DataBase.Controllers
         /// <param name="TableName">表格名称</param>
         /// <returns></returns>
         [LoginFilterAttribute]
-        public JsonResult RowsJson(string dbName, string TableName)
+        public JsonResult RowsJson(string dbName, string TableName, string connectionStringName = "SqlServerHelper")
         { 
-            IEnumerable<RowsView> list_rows = homeDA.GetRows(dbName, TableName);
+            IEnumerable<RowsView> list_rows = homeDA.GetRows(dbName, TableName,connectionStringName);
 
             return Json(list_rows, "text/plain", JsonRequestBehavior.AllowGet);
         }
 
 
         [LoginFilterAttribute]
-        public JsonResult RowsGridJson(string dbName, string TableName)
+        public JsonResult RowsGridJson(string dbName, string TableName, string connectionStringName = "SqlServerHelper")
         {
             int page =Convert.ToInt32(HttpContext.Request["page"]);
             int pageSize = Convert.ToInt32(HttpContext.Request["pageSize"]);
 
             RowsGridView rgv = new RowsGridView();
-            rgv.Rows = homeDA.GetRowsPaging(dbName, TableName, pageSize, page);
-            rgv.Total = homeDA.GetRowsCount(dbName,TableName);
+            rgv.Rows = homeDA.GetRowsPaging(dbName, TableName, pageSize, page,connectionStringName);
+            rgv.Total = homeDA.GetRowsCount(dbName,TableName,connectionStringName);
 
             return Json(rgv, "text/plain", JsonRequestBehavior.AllowGet);
         }
 
 
         [LoginFilterAttribute]
-        public ActionResult RowsGrid(string dbName, string TableName)
+        public ActionResult RowsGrid(string dbName, string TableName, string connectionStringName = "SqlServerHelper")
         {
             ViewBag.dbName = dbName;
             ViewBag.TableName = TableName; 
-            string desc = homeDA.GetTableDescription(dbName, TableName);
-            ViewBag.Desc = desc; 
+            string desc = homeDA.GetTableDescription(dbName, TableName,connectionStringName);
+            ViewBag.Desc = desc;
+            ViewBag.ConnName = connectionStringName;
             return View();
         }
 

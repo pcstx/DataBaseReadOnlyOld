@@ -81,5 +81,18 @@ namespace DataBase
             }
         }
 
+        public static List<string> GetConnectionStringCount()
+        {
+            List<string> list_connStr = new List<string>();
+             string loginType = ConfigurationManager.AppSettings["loginType"];
+             if (loginType == "1")
+             {
+                 for (int i = 0; i < ConfigurationManager.ConnectionStrings.Count; i++)
+                 {
+                     list_connStr.Add(ConfigurationManager.ConnectionStrings[i].Name);
+                 }
+             } 
+             return list_connStr;
+        } 
     }
 }

@@ -9,17 +9,17 @@ namespace DataBase
 {
     public interface IDatabaseView
     {
-        IEnumerable<DataBaseView> GetDatabase();
+        IEnumerable<DataBaseView> GetDatabase(string connectionStringName);
 
-        IEnumerable<TablesView> GetTables(string dbName);
+        IEnumerable<TablesView> GetTables(string dbName, string connectionStringName);
 
-        IEnumerable<RowsView> GetRows(string dbName, string TableName);
+        IEnumerable<RowsView> GetRows(string dbName, string TableName, string connectionStringName);
 
-        IEnumerable<RowsView> GetRowsPaging(string dbName, string TableName, int pageSize, int page);
+        IEnumerable<RowsView> GetRowsPaging(string dbName, string TableName, int pageSize, int page, string connectionStringName);
 
-        int GetRowsCount(string dbName, string TableName);
+        int GetRowsCount(string dbName, string TableName, string connectionStringName);
 
-        string GetTableDescription(string dbName, string tableName);
+        string GetTableDescription(string dbName, string tableName, string connectionStringName);
         /// <summary>
         /// 编辑说明
         /// </summary>
@@ -28,6 +28,6 @@ namespace DataBase
         /// <param name="rowName"></param>
         /// <param name="Description"></param>
         /// <returns></returns>
-        int EditDescription(string dbName, string TableName, string rowName, string Description);
+        int EditDescription(string dbName, string TableName, string rowName, string Description, string connectionStringName);
     }
 }

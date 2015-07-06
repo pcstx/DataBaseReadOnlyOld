@@ -1,4 +1,4 @@
-﻿
+﻿@model   List<string>
 @{
     Layout = null;
 }
@@ -33,10 +33,21 @@
     </div>
     <div id="layout1" style="width:99.2%; margin:0 auto; margin-top:4px; ">
         <div position="left" title="主要菜单" id="accordion1">
-            <div title="数据库" class="l-scroll">
-                @*<div id="toptoolbar"></div>*@
-                <ul id="tree1" style="margin-top:3px;"></ul>
+            @if (Model.Count <= 0)
+            {
+                <div title="数据库" class="l-scroll">
+                    <ul attr-name="tree1" attr-data="" style="margin-top:3px;"></ul>
                 </div>
+            }
+            else
+            { 
+                foreach (var c in Model)
+                {
+                    <div title="@c" class="l-scroll">
+                        <ul attr-name="tree1" attr-data="@c" style="margin-top:3px;"></ul>
+                    </div>
+                } 
+            }                
             </div>
         <div position="center" id="framecenter">
             <div tabid="home" title="配置信息" style="height:300px">

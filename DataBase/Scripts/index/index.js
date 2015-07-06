@@ -1,13 +1,13 @@
 ﻿ var tab = null;
-var accordion = null;
-var tree = null;
+var accordion = null; 
 var menu;
 var dbUrl = location.protocol + "//" + location.host + '/Home/DataBaseJson';
 var tableUrl = location.protocol + "//" + location.host + '/Home/TablesJson/';
 var rowUrl = location.protocol + "//" + location.host + '/Home/RowsJson/';
 var gridUrl = location.protocol + "//" + location.host + '/Home/RowsGrid/';
 
-$(function () { 
+$(function () {
+    var treeObj = $("ul[attr-name='tree1']");
     //布局
     $("#layout1").ligerLayout({ leftWidth: 190, height: '100%', heightDiff: -34, space: 4, onHeightChanged: f_heightChanged });
 
@@ -35,48 +35,57 @@ $(function () {
         ]
     });
 
-    $("#tree1").ligerTree({
-        checkbox: false,
-         slide: true,
-         nodeWidth: 250,
-        btnClickToToggleOnly :false,
-       // treeLine: false,
-        idFieldName: 'id', 
-        textFieldName: 'name',
-        url: dbUrl,
-        isLeaf: function (data) {
-            if (!data) return false;
-            return data.type == "table";
-        },
-        delay: function (e) {
-            var data = e.data;
-            if (data.type == "database") {
-                return { url: tableUrl + data.name }
-            } else if (data.type == "table") {
-                return { url: rowUrl + data.databaseName + '/' + data.name }
-            }
-            return true;
-        },
-        onSelect: SelectNode
-    });
-
-    menu = $.ligerMenu({
-        top: 100, left: 100, width: 120, items:
-                    [
-                    { text: '设计', click: SelectNode },
-                    { text: '查看', click: SelectNode }
-                    ]
-    });
-
-    $("#tree1").bind("contextmenu", function (e) {
-        menu.show({ top: e.pageY, left: e.pageX });
-        return false;
-
-    });
-
+    (function buildTree() {
+        for (var i = 0; i < treeObj.length; i++) {
+            var tree = $(treeObj[i]);
+            var attrData = tree.attr("attr-data");
+            tree.ligerTree({
+                checkbox: false,
+                slide: true,
+                nodeWidth: 250,
+                btnClickToToggleOnly: false,
+                // treeLine: false,
+                idFieldName: 'id',
+                textFieldName: 'name',
+                url: dbUrl + "?connectionStringName=" + attrData,
+                isLeaf: function (data) {
+                    if (!data) return false;
+                    return data.type == "table";
+                },
+                delay: function (e) {
+                    var data = e.data;
+                    if (data.type == "database") {
+                        return { url: tableUrl + data.name + "?connectionStringName=" + e.data.connName }
+                    } else if (data.type == "table") {
+                        return { url: rowUrl + data.databaseName + '/' + data.name + "?connectionStringName=" + e.data.connName }
+                    }
+                    return true;
+                },
+                onSelect: function (node) {
+                    if (node.data && node.data.type == "database") return;
+                    var tabid = $(node.target).attr("tabid");
+                    if (!tabid) {
+                        tabid = new Date().getTime();
+                        $(node.target).attr("tabid", tabid)
+                    }
+                    f_addTab(tabid, node.data.name, gridUrl + node.data.databaseName + "/" + node.data.name + "?connectionStringName=" + node.data.connName);
+                }
+            });
+            
+        }
+    })();
+     
+    //menu = $.ligerMenu({
+    //    top: 100, left: 100, width: 120, items:
+    //                [
+    //                { text: '设计', click: SelectNode },
+    //                { text: '查看', click: SelectNode }
+    //                ]
+    //});
+     
     tab = $("#framecenter").ligerGetTabManager();
     accordion = $("#accordion1").ligerGetAccordionManager();
-    tree = $("#tree1").ligerGetTreeManager();
+   
     $("#pageloading").hide();
 
 });
@@ -89,17 +98,7 @@ function f_heightChanged(options) {
 function f_addTab(tabid, text, url) {
     tab.addTabItem({ tabid: tabid, text: text, url: url });
 }
-
-function SelectNode(node) {
-    if (node.data&&node.data.type == "database") return;
-    var tabid = $(node.target).attr("tabid");
-    if (!tabid) {
-        tabid = new Date().getTime();
-        $(node.target).attr("tabid", tabid)
-    }
-    f_addTab(tabid, node.data.name, gridUrl + node.data.databaseName + "/" + node.data.name);
-}
-
+ 
 function itemclick(item) {
     alert(item.text);
 }
