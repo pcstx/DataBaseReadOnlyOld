@@ -61,34 +61,41 @@ $(function () {
                     }
                     return true;
                 },
-                onSelect: function (node) {
-                    if (node.data && node.data.type == "database") return;
-                    var tabid = $(node.target).attr("tabid");
-                    if (!tabid) {
-                        tabid = new Date().getTime();
-                        $(node.target).attr("tabid", tabid)
-                    }
-                    f_addTab(tabid, node.data.name, gridUrl + node.data.databaseName + "/" + node.data.name + "?connectionStringName=" + node.data.connName);
-                }
+                onSelect: SelectNode
             });
             
         }
     })();
      
-    //menu = $.ligerMenu({
-    //    top: 100, left: 100, width: 120, items:
-    //                [
-    //                { text: '设计', click: SelectNode },
-    //                { text: '查看', click: SelectNode }
-    //                ]
-    //});
+    menu = $.ligerMenu({
+        top: 100, left: 100, width: 120, items:
+                    [
+                    { text: '设计', click: SelectNode },
+                    { text: '查看', click: SelectNode }
+                    ]
+    });
      
     tab = $("#framecenter").ligerGetTabManager();
     accordion = $("#accordion1").ligerGetAccordionManager();
-   
+    treeObj.bind("contextmenu", function (e) {
+        menu.show({ top: e.pageY, left: e.pageX });
+        return false;
+
+    });
     $("#pageloading").hide();
 
 });
+
+function SelectNode(node) {
+    if (node.data && node.data.type == "database") return;
+    var tabid = $(node.target).attr("tabid");
+    if (!tabid) {
+        tabid = new Date().getTime();
+        $(node.target).attr("tabid", tabid)
+    }
+    f_addTab(tabid, node.data.name, gridUrl + node.data.databaseName + "/" + node.data.name + "?connectionStringName=" + node.data.connName);
+}
+
 function f_heightChanged(options) {
     if (tab)
         tab.addHeight(options.diff);

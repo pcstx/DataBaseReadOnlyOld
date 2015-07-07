@@ -179,5 +179,19 @@ namespace DataBase.Controllers
                 return RedirectToAction("Index");
         }
 
+         public ActionResult Select()
+         {
+             return View();
+         }
+
+        [LoginFilter]
+        [HttpPost]
+         public ActionResult SelectTable(string sql, string connectionStringName = "Platform")
+         {
+             DataAccess.SelectTableAccess access = new DataAccess.SelectTableAccess();
+             var dy= access.Select(sql, connectionStringName);
+             return View(dy);
+         }
+
     }
 }

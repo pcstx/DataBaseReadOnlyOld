@@ -1,0 +1,48 @@
+﻿@model   DataSet
+@using System.Data
+@{
+    ViewBag.Title = "Select";
+}
+<table> 
+    <tr>
+        <th>列1</th>
+        <th>列2</th>
+        <th>列3</th>  
+    </tr> 
+        <tr>
+            <td>1</td>
+            <td>21</td>
+            <td>31</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>22</td>
+            <td>32</td>
+        </tr> 
+</table> 
+
+        @{
+            DataSet ds = Model;
+            for (int i = 0; i < ds.Tables.Count; i++)
+            {
+                DataTable dt = ds.Tables[i];
+                int columnTotal = dt.Columns.Count;
+                <tabe>     
+                    <tr>          
+                    @foreach (DataColumn dc in dt.Columns)
+                    {
+                        <th>@dc.ColumnName</th>
+                    }  
+                    </tr>   
+                      @foreach (DataRow dr in dt.Rows)
+                      {
+                        <tr>
+                            @for (int j = 0; j < columnTotal; j++)
+                            {
+                                <td>@dr[j]</td>
+                            }                            
+                        </tr>
+                      }  
+                </tabe> 
+            } 
+        }  

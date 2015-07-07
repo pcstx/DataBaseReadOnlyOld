@@ -126,6 +126,7 @@
     <Compile Include="DataAccess\ConfigDA.cs" />
     <Compile Include="DataAccess\ConfigurationOperator.cs" />
     <Compile Include="DataAccess\DatabaseViewAccess.cs" />
+    <Compile Include="DataAccess\SelectTableAccess.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -491,6 +492,8 @@
     <Content Include="Views\Home\Config.cshtml" />
     <Content Include="Views\Home\Edit.cshtml" />
     <Content Include="Views\Home\Login.cshtml" />
+    <Content Include="Views\Home\SelectTable.cshtml" />
+    <Content Include="Views\Home\Select.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
