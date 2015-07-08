@@ -193,5 +193,20 @@ namespace DataBase.Controllers
              return View(dy);
          }
 
+        [LoginFilter]
+        [HttpPost]
+        public ActionResult EditRowDescription(string dbName, string tableName, string rowName, string description, string connectionStringName= "SqlServerHelper")
+        {
+            int result= homeDA.EditDescription(dbName, tableName, rowName, description, connectionStringName);
+            return Content(result.ToString());
+        }
+
+        [LoginFilter]
+        [HttpPost]
+        public ActionResult EditTableDescription(string dbName, string tableName, string description, string connectionStringName)
+        {
+            int result = homeDA.EditTableDescription(dbName, tableName, description, connectionStringName);
+            return Content(result.ToString());
+        }
     }
 }

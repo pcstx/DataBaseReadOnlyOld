@@ -231,5 +231,37 @@ namespace DataBase.DataAccess
                 return 0;
             }
         }
+
+        public int EditTableDescription(string dbName,string TableName,string Description,string connectionStringName)
+        {
+            string sql = @"   use {0};  
+                                  if exists
+                                (  
+                                SELECT [Value]
+                                FROM sys.extended_properties a left JOIN  sysobjects b ON a.major_id=b.id
+                                WHERE b.name='{1}' and minor_id=0
+                                 )
+                                begin
+                                  EXEC sp_updateextendedproperty 'MS_Description','{2}',N'user',N'dbo',N'table','{1}',NULL,NULL
+                                end
+                                else
+                                begin  
+                                  EXECUTE sp_addextendedproperty N'MS_Description', '{2}', N'user', N'dbo', N'table', N'{1}', NULL, NULL
+                                 end ";
+            try
+            {
+                dbName = dbName.Replace('\'', ' ');
+                sql = string.Format(sql, dbName, TableName, Description);
+                using (IDbConnection conn = ConnectionString.GetConnection(connectionStringName))
+                {
+                    int result = conn.Execute(sql);
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                return 0;
+            }
+        }
     }
 }

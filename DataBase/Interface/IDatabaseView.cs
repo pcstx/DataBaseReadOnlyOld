@@ -29,5 +29,8 @@ namespace DataBase
         /// <param name="Description"></param>
         /// <returns></returns>
         int EditDescription(string dbName, string TableName, string rowName, string Description, string connectionStringName);
+        int EditTableDescription(string dbName, string TableName, string Description, string connectionStringName);
+
+
     }
 }
