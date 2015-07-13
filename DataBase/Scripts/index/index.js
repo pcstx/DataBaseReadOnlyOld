@@ -56,7 +56,7 @@ $(function () {
                 delay: function (e) {
                     var data = e.data;
                     if (data.type == "database") {
-                        return { url: tableUrl + data.name + "?connectionStringName=" + e.data.connName }
+                        return { url: tableUrl + "?dbName=" + data.name + "&connectionStringName=" + e.data.connName }
                     } else if (data.type == "table") {
                         return { url: rowUrl + data.databaseName + '/' + data.name + "?connectionStringName=" + e.data.connName }
                     }
