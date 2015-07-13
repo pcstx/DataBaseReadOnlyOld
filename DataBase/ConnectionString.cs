@@ -5,25 +5,42 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
+using System.Xml.Linq;
 
 namespace DataBase
 {
+    public enum ConnType
+    { 
+        write=1,
+        read=2
+    }
+
     public class ConnectionString
     {
+       static string configFilePath = HttpContext.Current.Server.MapPath("/App_Data/connectionStrings.config");
+                     
         /// <summary>
         /// 默认选择第一个连接字符串
         /// </summary>
         /// <returns>返回连接字符串</returns>
-        public static string connectionString()
+        public static string connectionString(int connType = 1)
         {
             string connStr = string.Empty;
             string loginType = ConfigurationManager.AppSettings["loginType"];
             if (loginType == "1")
-            {
-                if (ConfigurationManager.ConnectionStrings.Count > 0)
+            { 
+                XElement root = XElement.Load(configFilePath);
+                XElement query = (from item in root.Elements()
+                                  where (item.Attribute("default").Value == "true")
+                                  select item).FirstOrDefault();
+                if (query != null)
                 {
-                    connStr = ConfigurationManager.ConnectionStrings[0].ConnectionString;
-                } 
+                    connStr = query.Element(connType == 1 ? "write" : "read").Attribute("connectionString").Value;
+                }              
+                //if (ConfigurationManager.ConnectionStrings.Count > 0)
+                //{
+                //    connStr = ConfigurationManager.ConnectionStrings[0].ConnectionString;
+                //} 
             }
             else
             {
@@ -37,19 +54,28 @@ namespace DataBase
         /// </summary>
         /// <param name="connectionStringName">连接字符串名称</param>
         /// <returns>返回连接字符串</returns>
-        public static string connectionString(string connectionStringName)
+        public static string connectionString(string connectionStringName,int connType=1)
         {
             string connStr = string.Empty;
              string loginType = ConfigurationManager.AppSettings["loginType"]; 
              if (loginType == "1") //0登陆，1连接字符串配置
-             {
+             { 
                  if (string.IsNullOrEmpty(connectionStringName))
                  {
-                    connStr=connectionString();
+                    connStr=connectionString(connType);
                  }
                  else
                  {
-                     connStr = ConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString;
+                     //读取connectionStrings.config里面的字段                 
+                     XElement root = XElement.Load(configFilePath);
+                     XElement query = (from item in root.Elements()
+                                       where (item.Attribute("name").Value == connectionStringName)
+                                       select item).FirstOrDefault();
+                     if (query != null)
+                     {
+                         connStr = query.Element(connType == 1 ? "write" : "read").Attribute("connectionString").Value;
+                     }         
+                    // connStr = ConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString;
                  }
              }
              else
@@ -59,9 +85,9 @@ namespace DataBase
              return connStr;
         }
 
-        public static IDbConnection GetConnection(string connectionStringName=null)
+        public static IDbConnection GetConnection(string connectionStringName=null,int connType=1)
         {
-            IDbConnection conn = new SqlConnection(connectionString(connectionStringName));
+            IDbConnection conn = new SqlConnection(connectionString(connectionStringName,connType));
             conn.Open();
             return conn;
         }
@@ -87,10 +113,13 @@ namespace DataBase
              string loginType = ConfigurationManager.AppSettings["loginType"];
              if (loginType == "1")
              {
-                 for (int i = 0; i < ConfigurationManager.ConnectionStrings.Count; i++)
-                 {
-                     list_connStr.Add(ConfigurationManager.ConnectionStrings[i].Name);
-                 }
+                 XElement root = XElement.Load(configFilePath);
+                 list_connStr = root.Elements().Select(n => n.Attribute("name").Value).ToList<string>();
+                 
+                 //for (int i = 0; i < ConfigurationManager.ConnectionStrings.Count; i++)
+                 //{
+                 //    list_connStr.Add(ConfigurationManager.ConnectionStrings[i].Name);
+                 //}
              } 
              return list_connStr;
         } 

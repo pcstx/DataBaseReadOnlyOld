@@ -179,18 +179,21 @@ namespace DataBase.Controllers
                 return RedirectToAction("Index");
         }
 
-         public ActionResult Select()
+         public ActionResult Select(string dbName, string tableName,string connectionStringName = "SqlServerHelper")
          {
+             ViewBag.dbName = dbName;
+             ViewBag.Conn = connectionStringName;
+             ViewBag.tableName = tableName;
              return View();
          }
 
         [LoginFilter]
-        [HttpPost]
-         public ActionResult SelectTable(string sql, string connectionStringName = "SqlServerHelper")
+        [HttpPost]        
+         public ActionResult SelectTable(string sql,string dbName, string connectionStringName = "SqlServerHelper")
          {
              DataAccess.SelectTableAccess access = new DataAccess.SelectTableAccess();
-             var dy= access.Select(sql, connectionStringName);
-             return View(dy);
+             var dy = access.Select(sql, dbName, connectionStringName);
+             return PartialView(dy);
          }
 
         [LoginFilter]
@@ -208,5 +211,11 @@ namespace DataBase.Controllers
             int result = homeDA.EditTableDescription(dbName, tableName, description, connectionStringName);
             return Content(result.ToString());
         }
+
+        public ActionResult Test()
+        {
+            return PartialView();
+        }
+
     }
 }

@@ -1,10 +1,11 @@
 ﻿ var tab = null;
 var accordion = null; 
-var menu;
+var menu; var actionNode;
 var dbUrl = location.protocol + "//" + location.host + '/Home/DataBaseJson';
 var tableUrl = location.protocol + "//" + location.host + '/Home/TablesJson/';
 var rowUrl = location.protocol + "//" + location.host + '/Home/RowsJson/';
 var gridUrl = location.protocol + "//" + location.host + '/Home/RowsGrid/';
+var searchUrl=location.protocol + "//" + location.host + '/Home/Select/';
 
 $(function () {
     var treeObj = $("ul[attr-name='tree1']");
@@ -61,27 +62,48 @@ $(function () {
                     }
                     return true;
                 },
-                onSelect: SelectNode
+                onSelect: SelectNode,
+                onContextmenu: function (node, e) {
+                    if (node.data && node.data.type == "database") return ;
+                    actionNode = node;
+                    menu.show({ top: e.pageY, left: e.pageX });
+                    return false;
+                }
             });
             
         }
     })();
      
+    function Search() {
+        var tabid = $(actionNode.target).attr("tabid_search");
+        if (!tabid) {
+            tabid = new Date().getTime();
+            $(actionNode.target).attr("tabid_search", tabid)
+        }
+        f_addTab(tabid, actionNode.data.name + "_查询", searchUrl + "?dbName=" + actionNode.data.databaseName + "&tableName=" + actionNode.data.name + "&connectionStringName=" + actionNode.data.connName);
+    }
+
+    function Design() {
+        if (actionNode.data && actionNode.data.type == "database") return;
+        var tabid = $(actionNode.target).attr("tabid");
+        if (!tabid) {
+            tabid = new Date().getTime();
+            $(actionNode.target).attr("tabid", tabid)
+        }
+        f_addTab(tabid, actionNode.data.name, gridUrl + actionNode.data.databaseName + "/" + actionNode.data.name + "?connectionStringName=" + actionNode.data.connName);
+    }
+
     menu = $.ligerMenu({
         top: 100, left: 100, width: 120, items:
                     [
-                    { text: '设计', click: SelectNode },
-                    { text: '查看', click: SelectNode }
+                    { text: '设计', click: Design },
+                    { text: '查看', click: Search }
                     ]
     });
      
     tab = $("#framecenter").ligerGetTabManager();
     accordion = $("#accordion1").ligerGetAccordionManager();
-    treeObj.bind("contextmenu", function (e) {
-        menu.show({ top: e.pageY, left: e.pageX });
-        return false;
-
-    });
+    
     $("#pageloading").hide();
 
 });
