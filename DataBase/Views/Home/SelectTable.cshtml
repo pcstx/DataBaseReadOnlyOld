@@ -1,48 +1,77 @@
 ﻿@model   DataSet
 @using System.Data
 @{
-    ViewBag.Title = "Select";
+    ViewBag.Title = "查询结果";
+    Layout = null;
 }
-<table> 
-    <tr>
-        <th>列1</th>
-        <th>列2</th>
-        <th>列3</th>  
-    </tr> 
-        <tr>
-            <td>1</td>
-            <td>21</td>
-            <td>31</td>
-        </tr>
-        <tr>
-            <td>2</td>
-            <td>22</td>
-            <td>32</td>
-        </tr> 
-</table> 
 
-        @{
-            DataSet ds = Model;
-            for (int i = 0; i < ds.Tables.Count; i++)
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title> 
+    <style type="text/css">
+        table.gridtable {
+            font-family: verdana,arial,sans-serif;
+            font-size: 11px;
+            color: #333333;
+            border-width: 1px;
+            border-color: #666666;
+            border-collapse: collapse;
+        }
+
+            table.gridtable th {
+                border-width: 1px;
+                padding: 8px;
+                border-style: solid;
+                border-color: #666666;
+                background-color: #dedede;
+            }
+
+            table.gridtable td {
+                border-width: 1px;
+                padding: 8px;
+                border-style: solid;
+                border-color: #666666;
+                background-color: #ffffff;
+            }
+    </style>
+    </head>
+<body> 
+    <div>
+        <textarea></textarea>
+        <button>查询</button>
+    </div>
+    @for (int i = 0; i < Model.Tables.Count; i++)
+    {
+        <table class="gridtable">
+            @{
+                DataTable dt =Model.Tables[i];
+                int columnTotal = dt.Columns.Count;                  
+            }
+            <tr>
+                @if (columnTotal > 0)
+                { 
+                    <th>序号</th>
+                }
+                @foreach (DataColumn dc in dt.Columns)
+                {
+                    <th>@dc.ColumnName</th>
+                } 
+            </tr>
+            @for (int rowIndex = 0; rowIndex < dt.Rows.Count; rowIndex++)
             {
-                DataTable dt = ds.Tables[i];
-                int columnTotal = dt.Columns.Count;
-                <tabe>     
-                    <tr>          
-                    @foreach (DataColumn dc in dt.Columns)
+                DataRow dr = dt.Rows[rowIndex];
+                <tr>
+                    <td>@(rowIndex+1)</td>
+                    @for (int j = 0; j < columnTotal; j++)
                     {
-                        <th>@dc.ColumnName</th>
-                    }  
-                    </tr>   
-                      @foreach (DataRow dr in dt.Rows)
-                      {
-                        <tr>
-                            @for (int j = 0; j < columnTotal; j++)
-                            {
-                                <td>@dr[j]</td>
-                            }                            
-                        </tr>
-                      }  
-                </tabe> 
+                        <td>@dr[j]</td>
+                    }
+                </tr>
             } 
-        }  
+        </table>
+        <p></p>
+    } 
+</body>
+</html> 

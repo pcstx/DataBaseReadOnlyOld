@@ -186,7 +186,7 @@ namespace DataBase.Controllers
 
         [LoginFilter]
         [HttpPost]
-         public ActionResult SelectTable(string sql, string connectionStringName = "Platform")
+         public ActionResult SelectTable(string sql, string connectionStringName = "SqlServerHelper")
          {
              DataAccess.SelectTableAccess access = new DataAccess.SelectTableAccess();
              var dy= access.Select(sql, connectionStringName);

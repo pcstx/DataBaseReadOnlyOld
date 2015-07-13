@@ -20,6 +20,7 @@ namespace DataBase.DataAccess
                 {
                     dapter.Fill(ds);                
                 }
+                conn.Close();
             }
             return ds;
         }

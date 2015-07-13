@@ -36,8 +36,8 @@ namespace DataBase.DataAccess
             {
                 string tableSQL = @"select t.object_id as id,t.name as name,t.create_date as createdate,
                                     t.modify_date as modifydate,s.value as note,databaseName='{0}', type='table',connName='{1}'
-                                    from {0}.sys.objects t with(nolock)
-                                    left join {0}.sys.extended_properties s with(nolock) on t.object_id=s.major_id and s.minor_id=0  
+                                    from [{0}].sys.objects t with(nolock)
+                                    left join [{0}].sys.extended_properties s with(nolock) on t.object_id=s.major_id and s.minor_id=0  
                                     where [type] = 'u' and is_ms_shipped=0
                                     order by name;";
 
@@ -64,8 +64,8 @@ namespace DataBase.DataAccess
                 string rowSQL = @" SELECT id=C.column_id,name=C.name,primaryKey=ISNULL(IDX.PrimaryKey,N''),
                                     rowType=T.name,lenght=C.max_length,isNull=C.is_nullable,defaultValue=ISNULL(D.definition,N''),
                                     note=ISNULL(PFD.[value],N''), type='row'
-                                    FROM {0}.sys.columns C with(nolock)
-                                        INNER JOIN {0}.sys.objects O with(nolock)
+                                    FROM [{0}].sys.columns C with(nolock)
+                                        INNER JOIN [{0}].sys.objects O with(nolock)
                                             ON C.[object_id]=O.[object_id] AND O.type='U' AND O.is_ms_shipped=0
                                         INNER JOIN sys.types T with(nolock)
                                             ON C.user_type_id=T.user_type_id
@@ -109,19 +109,19 @@ namespace DataBase.DataAccess
                                         id=C.column_id,name=C.name,primaryKey=ISNULL(IDX.PrimaryKey,N''),
                                         rowType=T.name,lenght=C.max_length,isNull=C.is_nullable,defaultValue=ISNULL(D.definition,N''),
                                         note=ISNULL(PFD.[value],N''), type='row'
-                                        FROM {0}.sys.columns C with(nolock)
-                                            INNER JOIN  {0}.sys.objects O with(nolock)
+                                        FROM [{0}].sys.columns C with(nolock)
+                                            INNER JOIN  [{0}].sys.objects O with(nolock)
                                                 ON C.[object_id]=O.[object_id] AND O.type='U' AND O.is_ms_shipped=0
-                                            INNER JOIN {0}.sys.types T with(nolock)
+                                            INNER JOIN [{0}].sys.types T with(nolock)
                                                 ON C.user_type_id=T.user_type_id 
-                                            LEFT JOIN {0}.sys.default_constraints D with(nolock)
+                                            LEFT JOIN [{0}].sys.default_constraints D with(nolock)
                                                 ON C.[object_id]=D.parent_object_id AND C.column_id=D.parent_column_id AND C.default_object_id=D.[object_id]
-                                            LEFT JOIN {0}.sys.extended_properties PFD with(nolock)
+                                            LEFT JOIN [{0}].sys.extended_properties PFD with(nolock)
                                                 ON PFD.class=1 AND C.[object_id]=PFD.major_id AND C.column_id=PFD.minor_id
                                             LEFT JOIN                       -- 索引及主键信息
                                             (  SELECT IDXC.[object_id],IDXC.column_id,PrimaryKey=IDX.is_primary_key
-                                                FROM {0}.sys.indexes IDX with(nolock)
-		                                        INNER JOIN {0}.sys.index_columns IDXC with(nolock)
+                                                FROM [{0}].sys.indexes IDX with(nolock)
+		                                        INNER JOIN [{0}].sys.index_columns IDXC with(nolock)
 			                                        ON IDX.[object_id]=IDXC.[object_id] AND IDX.index_id=IDXC.index_id
                                             ) IDX
                                                 ON C.[object_id]=IDX.[object_id] AND C.column_id=IDX.column_id 
@@ -147,8 +147,8 @@ namespace DataBase.DataAccess
         {
             try
             {
-                string rowSQL = @" SELECT  count(*) as total FROM {0}.sys.columns C with(nolock) 
-                                         INNER JOIN {0}.sys.objects O with(nolock) ON C.[object_id]=O.[object_id] AND O.type='U' AND O.is_ms_shipped=0 
+                string rowSQL = @" SELECT  count(*) as total FROM [{0}].sys.columns C with(nolock) 
+                                         INNER JOIN [{0}].sys.objects O with(nolock) ON C.[object_id]=O.[object_id] AND O.type='U' AND O.is_ms_shipped=0 
                                         WHERE O.name=@tableName ";
                 dbName = dbName.Replace('\'', ' ');
                 rowSQL = string.Format(rowSQL, dbName);
@@ -202,19 +202,19 @@ namespace DataBase.DataAccess
             try
             {
                 string sql = @" if exists
-                            (  select * FROM  {0}.sys.extended_properties PFD with(nolock)
-	                        left join  {0}.sys.columns C  with(nolock)
+                            (  select * FROM  [{0}].sys.extended_properties PFD with(nolock)
+	                        left join  [{0}].sys.columns C  with(nolock)
 	                        ON PFD.class=1 AND C.[object_id]=PFD.major_id AND C.column_id=PFD.minor_id        
-	                        left JOIN  {0}.sys.objects O with(nolock)
+	                        left JOIN  [{0}].sys.objects O with(nolock)
 				                        ON C.[object_id]=O.[object_id] AND O.type='U' AND O.is_ms_shipped=0		 
 	                        where C.name='{2}' and O.name='{1}' )
                         begin
-	                        USE {0};
+	                        USE [{0}];
                             EXEC sp_updateextendedproperty N'MS_Description',   '{3}',   N'user',   N'dbo',   N'table',   N'{1}',   N'column',   N'{2}'
                         end
                         else
                         begin
-	                        USE {0};
+	                        USE [{0}];
 	                        EXECUTE   sp_addextendedproperty   N'MS_Description',   '{3}',   N'user',   N'dbo',   N'table',   N'{1}',   N'column',   N'{2}' 
                         end ";  //判断是否存在，不存在新增，存在修改
                 dbName = dbName.Replace('\'', ' ');
@@ -234,7 +234,7 @@ namespace DataBase.DataAccess
 
         public int EditTableDescription(string dbName,string TableName,string Description,string connectionStringName)
         {
-            string sql = @"   use {0};  
+            string sql = @"   use [{0}];  
                                   if exists
                                 (  
                                 SELECT [Value]
