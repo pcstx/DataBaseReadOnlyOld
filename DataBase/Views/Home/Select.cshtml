@@ -68,7 +68,7 @@
 </head>
 <body>
     <div>
-        <textarea id="sql">select top 100 * from @(ViewBag.tableName) with(nolock)</textarea> 
+        <textarea id="sql">select top 100 * from [@(ViewBag.tableName)] with(nolock)</textarea> 
         <button id="search">查询</button>
     </div> 
     <div id="result"></div>

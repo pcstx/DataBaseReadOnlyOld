@@ -55,7 +55,7 @@ namespace DataBase
         /// <param name="connectionStringName">连接字符串名称</param>
         /// <returns>返回连接字符串</returns>
         public static string connectionString(string connectionStringName,int connType=1)
-        {
+        { 
             string connStr = string.Empty;
              string loginType = ConfigurationManager.AppSettings["loginType"]; 
              if (loginType == "1") //0登陆，1连接字符串配置
@@ -114,14 +114,16 @@ namespace DataBase
              if (loginType == "1")
              {
                  XElement root = XElement.Load(configFilePath);
-                 list_connStr = root.Elements().Select(n => n.Attribute("name").Value).ToList<string>();
-                 
-                 //for (int i = 0; i < ConfigurationManager.ConnectionStrings.Count; i++)
-                 //{
-                 //    list_connStr.Add(ConfigurationManager.ConnectionStrings[i].Name);
-                 //}
+                 list_connStr = root.Elements().Select(n => n.Attribute("name").Value).ToList<string>(); 
              } 
              return list_connStr;
-        } 
+        }
+
+        public static string GetDataSource(string connectionStringName)
+        {
+            SqlConnectionStringBuilder sqlConnStr = new SqlConnectionStringBuilder(connectionString(connectionStringName));
+            return sqlConnStr.DataSource;
+        }
+
     }
 }

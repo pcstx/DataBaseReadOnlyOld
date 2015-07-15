@@ -43,7 +43,7 @@
             { 
                 foreach (var c in Model)
                 {
-                    <div title="@c" class="l-scroll">
+                    <div title="@ConnectionString.GetDataSource(c)" class="l-scroll">
                         <ul attr-name="tree1" attr-data="@c" style="margin-top:3px;"></ul>
                     </div>
                 } 
