@@ -196,6 +196,24 @@ namespace DataBase.Controllers
              return PartialView(dy);
          }
 
+        /// <summary>
+        /// 导出excel
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <param name="dbName"></param>
+        /// <param name="connectionStringName"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult ExportTable(string sql, string dbName, string connectionStringName = "SqlServerHelper")
+        {
+            DataAccess.SelectTableAccess access = new DataAccess.SelectTableAccess();
+            var dy = access.Select(sql, dbName, connectionStringName);
+            string path = Server.MapPath(@"~/App_Data/Export/export.xls");
+            bool result= ExcelExport.ExportExcelWithAspose(dy, path);
+
+            return File(path, "application/ms-excel", "export.xls");
+        }
+
         [LoginFilter]
         [HttpPost]
         public ActionResult EditRowDescription(string dbName, string tableName, string rowName, string description, string connectionStringName= "SqlServerHelper")

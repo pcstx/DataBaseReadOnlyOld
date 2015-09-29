@@ -41,16 +41,24 @@
         }
         div#result {
             overflow:auto;
-            height:500px;
+            /*height:500px;*/
             margin:10px 0;
         }
     </style> 
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>
     <script>
-    $(function () {
-        $("#search").bind("click", select);
-    })
+        $(function () {
+            changeHeight();
+            $(window).resize(changeHeight);
 
+            $("#search").bind("click", select); 
+        })
+
+        function changeHeight() {
+            var pageHeight = $(window).height();
+            $("#result").height(pageHeight - 243);
+        }
+  
     function select() {
         var sql = $("#sql").val();
         if (sql) {
@@ -67,9 +75,14 @@
     </script>
 </head>
 <body>
-    <div>
-        <textarea id="sql">select top 100 * from [@(ViewBag.tableName)] with(nolock)</textarea> 
-        <button id="search">查询</button>
+    <div>       
+        <form method="post" action="@Url.Action("ExportTable","Home")" enctype="multipart/form-data">
+            <textarea id="sql" name="sql">select top 100 * from [@(ViewBag.tableName)] with(nolock)</textarea> 
+            <input type="hidden" name="dbName"  value="@(ViewBag.dbName)" />
+            <input type="hidden" name="connectionStringName" value="@(ViewBag.Conn)" />   
+            <input type="button" id="search" value="查询" />          
+            <input type="submit" value="导出Excel" />
+        </form>         
     </div> 
     <div id="result"></div>
 </body>
