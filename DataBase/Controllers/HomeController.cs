@@ -21,6 +21,14 @@ namespace DataBase.Controllers
             return View(list_connStr);
         }
 
+        [LoginFilter]
+        public ActionResult Sider()
+        {
+            List<string> list_connStr = ConnectionString.GetConnectionStringCount();
+             
+            return PartialView(list_connStr);
+        }
+
         /// <summary>
         /// 返回数据库json
         /// </summary>

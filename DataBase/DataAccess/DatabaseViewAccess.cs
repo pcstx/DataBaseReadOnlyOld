@@ -263,5 +263,119 @@ namespace DataBase.DataAccess
                 return 0;
             }
         }
+
+        public IEnumerable<ViewsView> GetViews(string dbName, string connectionStringName)
+        {
+            IEnumerable<ViewsView> list_views = new List<ViewsView>();
+
+            try
+            {
+                string sql = @" select name as Name,object_id as Id,create_date as CreateDate,modify_date as ModifyDate,connName='{1}'
+                               from [{0}].sys.objects t with(nolock)
+                               where [type] = 'V' order by name ";
+                dbName = dbName.Replace('\'', ' ');
+                sql = string.Format(sql, dbName, connectionStringName);
+                using (IDbConnection conn = ConnectionString.GetConnection(connectionStringName))
+                {
+                    list_views = conn.Query<ViewsView>(sql);
+                    return list_views;
+                }
+            }
+            catch (Exception ex)
+            {
+                return list_views;
+            }
+        }
+
+        /// <summary>
+        /// 视图的SQL语句
+        /// </summary>
+        /// <param name="dbName"></param>
+        /// <param name="viewName"></param>
+        /// <param name="connectionStringName"></param>
+        /// <returns></returns>
+        public string GetViewSQL(string dbName, string viewName, string connectionStringName)
+        {
+            string viewText = string.Empty;
+            string sql = @" select text from 
+                               [{0}].[dbo].[syscomments] s1 with(nolock)
+                               join [{0}].[dbo].[sysobjects] s2 with(nolock)
+                               on s1.id=s2.id where name='{1}' ";
+            try
+            {
+                dbName = dbName.Replace('\'', ' ');
+                sql = string.Format(sql, dbName, viewName);
+                using (IDbConnection conn = ConnectionString.GetConnection(connectionStringName))
+                {
+                    viewText = conn.ExecuteScalar<string>(sql);
+                    return viewText;
+                }
+            }
+            catch (Exception ex)
+            {
+                return viewText;
+            }
+        }
+        
+        /// <summary>
+        /// 存储过程列表
+        /// </summary>
+        /// <param name="dbName"></param>
+        /// <param name="connectionStringName"></param>
+        /// <returns></returns>
+        public IEnumerable<ProcedureView> GetProcedure(string dbName, string connectionStringName)
+        {
+            IEnumerable<ProcedureView> list_procedure = new List<ProcedureView>();
+
+            try
+            {
+                string sql = @" select name as Name,object_id as Id,create_date as CreateDate,modify_date as ModifyDate,connName='{1}'
+                               from [{0}].sys.objects t with(nolock)
+                               where [type] = 'P' order by name ";
+                dbName = dbName.Replace('\'', ' ');
+                sql = string.Format(sql, dbName, connectionStringName);
+                using (IDbConnection conn = ConnectionString.GetConnection(connectionStringName))
+                {
+                    list_procedure = conn.Query<ProcedureView>(sql);
+                    return list_procedure;
+                }
+            }
+            catch (Exception ex)
+            {
+                return list_procedure;
+            }
+        }
+
+        /// <summary>
+        /// 存储过程的SQL语句
+        /// </summary>
+        /// <param name="dbName"></param>
+        /// <param name="procedureName"></param>
+        /// <param name="connectionStringName"></param>
+        /// <returns></returns>
+        public string GetProcedureSQL(string dbName, string procedureName, string connectionStringName)
+        {
+            string procedureText = string.Empty;
+            string sql = @" select b.[definition] 
+                            from [{0}].[sys].[all_objects] a with(nolock),[{0}].[sys].[sql_modules] b with(nolock)
+                            where a.is_ms_shipped=0 and a.object_id = b.object_id and a.[type] in ('P') 
+                            and a.name='{1}' ";
+            try
+            {
+                dbName = dbName.Replace('\'', ' ');
+                sql = string.Format(sql, dbName, procedureName);
+                using (IDbConnection conn = ConnectionString.GetConnection(connectionStringName))
+                {
+                    procedureText = conn.ExecuteScalar<string>(sql);
+                    return procedureText;
+                }
+            }
+            catch (Exception ex)
+            {
+                return procedureText;
+            }
+        }
+
+
     }
 }

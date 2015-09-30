@@ -1,0 +1,49 @@
+﻿@model IEnumerable<DataBase.Models.ViewModels.DataBaseView> 
+<div class="siderTop">
+    <select name="dbname" class="dbname">
+        <option value="">请选择数据库</option>
+        @foreach (var db in Model)
+        {
+            <option value="@db.name">@db.name</option>
+        }
+    </select>
+    <button>刷新</button>
+</div>
+<div>
+    <div class="siderView">
+        <div class="siderViewTable" onclick="showTable()"><a href="javascript:void(0);">表</a></div>
+        <div class="siderViewView" onclick="showView()" ><a href="javascript:void(0);">视图</a></div>
+        <div class="siderViewFunction" onclick="showProcedure()"><a href="javascript:void(0);">可编程对象</a></div>
+    </div>
+    <div class="treeView">
+        <ul attr-name="tree1" attr-data="@(ViewBag.conn)" style="margin-top:3px;"></ul>
+    </div>
+    <div class="tableView">
+        <ul data-name="treeView" data-connName="@(ViewBag.conn)" style="margin-top:3px;"></ul>
+    </div>
+    <div class="procedure" style="display:none;" >
+        <ul data-name="treeProcedure" data-connName="@(ViewBag.conn)" style="margin-top:3px;"></ul>
+    </div>
+</div>
+<script>
+    function showTable() {
+        $(this).parent().parent().children(".treeView").show();
+        $(this).parent().parent().children(".tableView").hide();
+        $(this).parent().parent().children(".procedure").hide();
+    }
+
+    function showView() {
+        var dbName= $(".dbname").children("option:selected").val();
+        buildTree(0,dbName);
+        $(this).parent().parent().children(".treeView").hide();
+        $(this).parent().parent().children(".tableView").show();
+        $(this).parent().parent().children(".procedure").hide();
+    }
+
+    function showProcedure() {
+        $(this).parent().parent().children(".treeView").hide();
+        $(this).parent().parent().children(".tableView").hide();
+        $(this).parent().parent().children(".procedure").show();
+    }
+</script>
+ 

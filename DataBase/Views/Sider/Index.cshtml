@@ -1,0 +1,21 @@
+﻿@{
+    Layout = null;
+}
+@model  List<string>
+<div position="left" title="主要菜单" id="accordion1">
+    @if (Model.Count <= 0)
+    {
+        <div title="数据库" class="l-scroll">
+            <ul attr-name="tree1" attr-data="" style="margin-top:3px;"></ul>
+        </div>
+    }
+    else
+    { 
+        for(int c=0;c<Model.Count;c++)
+        {
+            <div title="@ConnectionString.GetDataSource(Model[c])" class="l-scroll" data-index="@c">
+               @Html.Action("SiderDatabase", "Sider",new { connectionStringName=Model[c] })
+            </div>
+        }
+    }
+</div>

@@ -1,0 +1,35 @@
+﻿@model  List<string>
+<div position="left" title="主要菜单" id="accordion1">
+    @if (Model.Count <= 0)
+    {
+        <div title="数据库" class="l-scroll">
+            <ul attr-name="tree1" attr-data="" style="margin-top:3px;"></ul>
+        </div>
+    }
+    else
+    {
+        foreach (var c in Model)
+        {
+            <div title="@ConnectionString.GetDataSource(c)" class="l-scroll">
+                <div class="siderTop">
+                    <select name="dbname" id="dbname">
+                        <option value="qdm">qdm</option>
+                        <option value="qdm1">qdm1</option>
+                    </select>
+                    <button>刷新</button>
+                </div>
+                <div class="siderBody">
+                    <div class="siderView">
+                        <div class="siderViewTable"><a href="#">表</a></div>
+                        <div class="siderViewView"><a href="#">视图</a></div>
+                        <div class="siderViewFunction"><a href="#">可编程对象</a></div>
+                    </div>
+                    <div>
+                        <ul attr-name="tree1" attr-data="@c" style="margin-top:3px;"></ul>
+                    </div>
+                </div> 
+            </div>
+        }
+    }
+</div>
+

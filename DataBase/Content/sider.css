@@ -1,0 +1,49 @@
+﻿        body{
+			margin: 0px;
+			padding: 0px;
+		}
+
+		.siderTop select{
+			width: 150px;
+			height: 25px;
+		}
+		.siderTop button{
+			width:50px;
+			height: 25px
+		}
+
+		.siderView{
+			margin:5px 0px; 
+			width: 100%; 
+		}
+		.siderView div{		 
+			background-color: #ddd;
+			width: 32%;
+			height:20px;
+			line-height: 20px;
+			text-align: center;
+			border:1px solid #fff
+		}
+		.siderView a{
+			color: #000;
+			text-decoration:none;
+			font-weight: bold;
+			width: 100%; 
+            display:inline-block;
+		}
+
+		.siderViewTable
+		{
+			float: left;
+			
+		}
+		.siderViewView{
+			float:left; 
+		}
+		.siderViewFunction{
+			float: left;
+		}
+        	.treeView{
+			overflow: auto;		
+            width:100%; 
+		}

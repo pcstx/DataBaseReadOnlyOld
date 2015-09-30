@@ -7,10 +7,16 @@ var rowUrl = location.protocol + "//" + location.host + '/Home/RowsJson/';
 var gridUrl = location.protocol + "//" + location.host + '/Home/RowsGrid/';
 var searchUrl=location.protocol + "//" + location.host + '/Home/Select/';
 
+var viewsUrl = location.protocol + "//" + location.host + '/Sider/ViewsJson/';
+var treeViewObj;
+
 $(function () {
     var treeObj = $("ul[attr-name='tree1']");
+    treeViewObj = $("ul[data-name='treeView']");
+    var treeProcedureObj = $("ul[data-name='treeProcedure']");
+
     //布局
-    $("#layout1").ligerLayout({ leftWidth: 190, height: '100%', heightDiff: -34, space: 4, onHeightChanged: f_heightChanged });
+    $("#layout1").ligerLayout({ leftWidth: 260, height: '100%', heightDiff: -34, space: 4, onHeightChanged: f_heightChanged });
 
     var height = $(".l-layout-center").height(); 
     //Tab
@@ -24,6 +30,44 @@ $(function () {
         $(this).removeClass("l-link-over");
     });
 
+    $(".dbname").bind("change", function () { 
+        var index = $(this).parent().parent().attr("data-index");
+        var databasename = $(this).children("option:selected").val();
+        var tree = $(treeObj[index]);
+        var connectionName = tree.attr("attr-data");
+
+        tree.ligerTree({
+            checkbox: false,
+            slide: true,
+            nodeWidth: 250,
+            btnClickToToggleOnly: false,
+            // treeLine: false,
+            idFieldName: 'id',
+            textFieldName: 'name',
+            url: tableUrl + "?dbName=" + databasename + "&connectionStringName=" + connectionName,
+            isLeaf: function (data) {
+                if (!data) return false;
+                return data.type == "table";
+            },
+            delay: function (e) {
+                var data = e.data;
+                if (data.type == "database") {
+                    return { url: tableUrl + "?dbName=" + data.name + "&connectionStringName=" + e.data.connName }
+                } else if (data.type == "table") {
+                    return { url: rowUrl + data.databaseName + '/' + data.name + "?connectionStringName=" + e.data.connName }
+                }
+                return true;
+            },
+            onSelect: SelectNode,
+            onContextmenu: function (node, e) {
+                if (node.data && node.data.type == "database") return;
+                actionNode = node;
+                menu.show({ top: e.pageY, left: e.pageX });
+                return false;
+            }
+        });
+    })
+
     $("#toptoolbar").ligerToolBar({
         items: [
                     {
@@ -36,6 +80,11 @@ $(function () {
         ]
     });
 
+    changeHeight();
+    $(window).resize(changeHeight);
+
+   
+    /*
     (function buildTree() {
         for (var i = 0; i < treeObj.length; i++) {
             var tree = $(treeObj[i]);
@@ -73,7 +122,17 @@ $(function () {
             
         }
     })();
-     
+     */
+
+    function changeHeight() {
+        var leftsideHeight = $(".l-scroll").height();
+
+        var siderTopHeight = $(".siderTop").height();
+        var siderViewHeight = $(".siderView").height();
+         
+        $(".treeView").height(leftsideHeight - siderTopHeight - siderViewHeight-30);
+    }
+
     function Search() {
         var tabid = $(actionNode.target).attr("tabid_search");
         if (!tabid) {
@@ -104,8 +163,7 @@ $(function () {
     tab = $("#framecenter").ligerGetTabManager();
     accordion = $("#accordion1").ligerGetAccordionManager();
     
-    $("#pageloading").hide();
-
+    $("#pageloading").hide(); 
 });
 
 function SelectNode(node) {
@@ -138,5 +196,40 @@ function f_open() {
             { text: '确定', onclick: function (item, dialog) { alert(item.text); } },
             { text: '取消', onclick: function (item, dialog) { dialog.close(); } }
         ], isResize: true
+    });
+}
+
+function buildTree(index,databaseName) {
+    var tree = $(treeViewObj[index]);
+    var connName = tree.attr("data-connName"); 
+    tree.ligerTree({
+        checkbox: false,
+        slide: true,
+        nodeWidth: 250,
+        btnClickToToggleOnly: false,
+        // treeLine: false,
+        idFieldName: 'Id',
+        textFieldName: 'Name',
+        url: viewsUrl + "?dbName=" + databaseName + "&connectionStringName=" + connName,
+        isLeaf: function (data) {
+            if (!data) return false;
+            return data.type == "table";
+        },
+        delay: function (e) {
+            var data = e.data;
+            if (data.type == "database") {
+                return { url: tableUrl + "?dbName=" + data.name + "&connectionStringName=" + e.data.connName }
+            } else if (data.type == "table") {
+                return { url: rowUrl + data.databaseName + '/' + data.name + "?connectionStringName=" + e.data.connName }
+            }
+            return true;
+        },
+        onSelect: SelectNode,
+        onContextmenu: function (node, e) {
+            if (node.data && node.data.type == "database") return;
+            actionNode = node;
+            menu.show({ top: e.pageY, left: e.pageX });
+            return false;
+        }
     });
 }

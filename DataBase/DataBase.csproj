@@ -124,6 +124,7 @@
     <Compile Include="CacheHelp.cs" />
     <Compile Include="ConnectionString.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\SiderController.cs" />
     <Compile Include="DataAccess\ConfigDA.cs" />
     <Compile Include="DataAccess\ConfigurationOperator.cs" />
     <Compile Include="DataAccess\DatabaseViewAccess.cs" />
@@ -137,10 +138,12 @@
     <Compile Include="Models\TableModels\DataBase.cs" />
     <Compile Include="Models\ViewModels\ConnectionStrings.cs" />
     <Compile Include="Models\ViewModels\DataBaseView.cs" />
+    <Compile Include="Models\ViewModels\ProcedureView.cs" />
     <Compile Include="Models\ViewModels\RowsGridView.cs" />
     <Compile Include="Models\ViewModels\RowsView.cs" />
     <Compile Include="Models\ViewModels\TableDescription.cs" />
     <Compile Include="Models\ViewModels\TablesView.cs" />
+    <Compile Include="Models\ViewModels\ViewsView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -152,6 +155,7 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\index.css" />
+    <Content Include="Content\sider.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -518,6 +522,9 @@
     <Content Include="Views\Home\Login.cshtml" />
     <Content Include="Views\Home\SelectTable.cshtml" />
     <Content Include="Views\Home\Select.cshtml" />
+    <Content Include="Views\Home\Sider.cshtml" />
+    <Content Include="Views\Sider\Index.cshtml" />
+    <Content Include="Views\Sider\SiderDatabase.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

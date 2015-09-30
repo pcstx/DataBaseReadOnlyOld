@@ -31,6 +31,9 @@ namespace DataBase
         int EditDescription(string dbName, string TableName, string rowName, string Description, string connectionStringName);
         int EditTableDescription(string dbName, string TableName, string Description, string connectionStringName);
 
+        IEnumerable<ViewsView> GetViews(string dbName, string connectionStringName);
+
+        IEnumerable<ProcedureView> GetProcedure(string dbName, string connectionStringName);
 
     }
 }
