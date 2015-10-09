@@ -15,6 +15,8 @@ namespace DataBase.Models.ViewModels
 
         public DateTime ModifyDate { get; set; }
 
+        public string databaseName { get; set; }
+        public string type { get; set; } 
         public string connName { get; set; }
     }
 }

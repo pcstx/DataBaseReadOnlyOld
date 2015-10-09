@@ -77,9 +77,9 @@
 <body>
     <div>       
         <form method="post" action="@Url.Action("ExportTable","Home")" enctype="multipart/form-data">
-            <textarea id="sql" name="sql">select top 100 * from [@(ViewBag.tableName)] with(nolock)</textarea> 
-            <input type="hidden" name="dbName"  value="@(ViewBag.dbName)" />
-            <input type="hidden" name="connectionStringName" value="@(ViewBag.Conn)" />   
+            <textarea id="sql" name="sql">@Html.Raw(ViewBag.SQL)</textarea> 
+            <input type="hidden" name="dbName"  value="@Html.Raw(ViewBag.dbName)" />
+            <input type="hidden" name="connectionStringName" value="@Html.Raw(ViewBag.Conn)" />   
             <input type="button" id="search" value="查询" />          
             <input type="submit" value="导出Excel" />
         </form>         

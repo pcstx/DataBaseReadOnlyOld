@@ -6,19 +6,18 @@ using System.Web;
 using System.Web.Mvc;
 
 namespace DataBase.Controllers
-{  
+{
+    [LoginFilter]
     public class SiderController : Controller
     {
         IDatabaseView homeDA = new DataAccess.DatabaseViewAccess();
-
-        [LoginFilter]
+         
         public ActionResult Index()
         {
             List<string> list_connStr = ConnectionString.GetConnectionStringCount();             
             return View(list_connStr);
         }
-
-        [LoginFilter]
+         
         public ActionResult SiderDatabase(string connectionStringName = "SqlServerHelper")
         {
             IEnumerable<DataBase.Models.ViewModels.DataBaseView> list_database = null;
@@ -36,8 +35,7 @@ namespace DataBase.Controllers
             ViewBag.conn = connectionStringName;
             return PartialView(list_database);
         }
-
-        [LoginFilter]
+         
         public ActionResult TablesJson(string dbName, string connectionStringName = "SqlServerHelper")
         {
             IEnumerable<TablesView> list_tables = null;
@@ -53,8 +51,7 @@ namespace DataBase.Controllers
             } 
             return Json(list_tables, "text/plain", JsonRequestBehavior.AllowGet);
         }
-
-        [LoginFilter]
+         
         public ActionResult ViewsJson(string dbName, string connectionStringName = "SqlServerHelper")
         {
             IEnumerable<ViewsView> list_Views = null;
@@ -70,18 +67,17 @@ namespace DataBase.Controllers
             }
             return Json(list_Views, "text/plain", JsonRequestBehavior.AllowGet);
         }
-
-        [LoginFilter]
+         
         public ActionResult ProcedureJson(string dbName, string connectionStringName = "SqlServerHelper")
         {
-            IEnumerable<ViewsView> list_Procedure = null;
+            IEnumerable<ProcedureView> list_Procedure = null;
             string connectionString = ConnectionString.connectionString(connectionStringName);
             if (!string.IsNullOrWhiteSpace(connectionString))
             {
-                list_Procedure = CacheHelper.GetCache(connectionString + "_Procedure_" + dbName) as IEnumerable<ViewsView>;
+                list_Procedure = CacheHelper.GetCache(connectionString + "_Procedure_" + dbName) as IEnumerable<ProcedureView>;
                 if (list_Procedure == null || list_Procedure.Count() <= 0)
                 {
-                    list_Procedure = homeDA.GetViews(dbName, connectionStringName);
+                    list_Procedure = homeDA.GetProcedure(dbName, connectionStringName);
                     CacheHelper.SetCache(connectionString + "_Procedure_" + dbName, list_Procedure, TimeSpan.FromHours(2));
                 }
             }

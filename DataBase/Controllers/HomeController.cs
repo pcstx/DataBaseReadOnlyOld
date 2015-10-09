@@ -187,11 +187,37 @@ namespace DataBase.Controllers
                 return RedirectToAction("Index");
         }
 
-         public ActionResult Select(string dbName, string tableName,string connectionStringName = "SqlServerHelper")
+        /// <summary>
+        /// 查询界面
+        /// </summary>
+        /// <param name="dbName"></param>
+        /// <param name="tableName"></param>
+        /// <param name="connectionStringName"></param>
+        /// <param name="selectType">1是表视图；2是存储过程</param>
+        /// <returns></returns>
+         public ActionResult Select(string dbName, string tableName,string connectionStringName = "SqlServerHelper", int selectType=1)
          {
              ViewBag.dbName = dbName;
              ViewBag.Conn = connectionStringName;
              ViewBag.tableName = tableName;
+
+            if (selectType == 1)
+            {
+                ViewBag.SQL = string.Format("select top 100 * from [{0}] with(nolock)", tableName);
+            }
+            else if (selectType == 2) {
+                ///查询存储过程参数
+
+                ViewBag.SQL = string.Format(@"EXEC  [{0}]
+		                                                @p_MemberId = N'1',
+		                                                @p_Status = N'2',
+		                                                @p_OrderStatus = N'3',
+		                                                @p_Count = 4,
+		                                                @p_Direction = 5", 
+                                                 tableName);
+
+            }
+            
              return View();
          }
 

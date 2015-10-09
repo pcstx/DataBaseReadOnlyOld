@@ -7,11 +7,11 @@ namespace DataBase.Models.ViewModels
 {
     public class TablesView
     {
-        public int id { get; set; }
+        public int Id { get; set; }
         /// <summary>
         /// 表名
         /// </summary>
-        public string name { get; set; }
+        public string Name { get; set; }
         /// <summary>
         /// 创建日期
         /// </summary>

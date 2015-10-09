@@ -34,7 +34,7 @@ namespace DataBase.DataAccess
             IEnumerable<TablesView> list_tables = new List<TablesView>();
             try
             {
-                string tableSQL = @"select t.object_id as id,t.name as name,t.create_date as createdate,
+                string tableSQL = @"select t.object_id as Id,t.name as Name,t.create_date as createdate,
                                     t.modify_date as modifydate,s.value as note,databaseName='{0}', type='table',connName='{1}'
                                     from [{0}].sys.objects t with(nolock)
                                     left join [{0}].sys.extended_properties s with(nolock) on t.object_id=s.major_id and s.minor_id=0  
@@ -270,7 +270,7 @@ namespace DataBase.DataAccess
 
             try
             {
-                string sql = @" select name as Name,object_id as Id,create_date as CreateDate,modify_date as ModifyDate,connName='{1}'
+                string sql = @" select name as Name,object_id as Id,create_date as CreateDate,modify_date as ModifyDate, databaseName='{0}',type='view',connName='{1}'
                                from [{0}].sys.objects t with(nolock)
                                where [type] = 'V' order by name ";
                 dbName = dbName.Replace('\'', ' ');
@@ -329,7 +329,7 @@ namespace DataBase.DataAccess
 
             try
             {
-                string sql = @" select name as Name,object_id as Id,create_date as CreateDate,modify_date as ModifyDate,connName='{1}'
+                string sql = @" select name as Name,object_id as Id,create_date as CreateDate,modify_date as ModifyDate,databaseName='{0}',type='procedure',connName='{1}'
                                from [{0}].sys.objects t with(nolock)
                                where [type] = 'P' order by name ";
                 dbName = dbName.Replace('\'', ' ');
@@ -376,6 +376,39 @@ namespace DataBase.DataAccess
             }
         }
 
+
+        public IEnumerable<ProcedureParam> GetProcedureParameters(string dbName, string procedureName, string connectionStringName)
+        {
+            IEnumerable<ProcedureParam> list_procedure = new List<ProcedureParam>();
+
+            string sql = @" select p.name,t.name as [type]
+                                from
+                                (
+                                select name,xusertype from [{0}].sys.syscolumns  with(nolock)
+                                    where ID in    
+                                    (  
+                                    SELECT id FROM [{0}].sys.sysobjects with(nolock)
+                                    WHERE OBJECTPROPERTY(id, N'IsProcedure') = 1    
+                                    and id = object_id(N'[dbo].[{1}]')   
+                                    )
+                                ) p  inner join [{0}].sys.types t with(nolock) on p.xusertype=T.user_type_id ";
+
+            try {
+                dbName = dbName.Replace('\'', ' ');
+                sql = string.Format(sql, dbName, procedureName);
+                using (IDbConnection conn = ConnectionString.GetConnection(connectionStringName))
+                {
+                    list_procedure = conn.Query<ProcedureParam>(sql);
+                    return list_procedure;
+                }
+            }
+            catch (Exception ex)
+            {
+                return list_procedure;
+            }
+
+
+        }
 
     }
 }

@@ -3,6 +3,10 @@
 			padding: 0px;
 		}
 
+        .siderTop {
+            margin:5px;
+        }
+
 		.siderTop select{
 			width: 150px;
 			height: 25px;
@@ -32,6 +36,14 @@
             display:inline-block;
 		}
 
+        .siderView .selected{
+            background-color:#313e53; 
+        }
+
+        .selected a {
+             color:#fff;
+        }
+
 		.siderViewTable
 		{
 			float: left;
@@ -43,7 +55,15 @@
 		.siderViewFunction{
 			float: left;
 		}
-        	.treeView{
+        .treeView{
 			overflow: auto;		
             width:100%; 
 		}
+.tableView {
+    overflow: auto;		
+            width:100%;
+}
+.procedure {
+    overflow: auto;		
+            width:100%;
+}

@@ -31,7 +31,11 @@ namespace DataBase
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
 
-         
+         routes.MapRoute(
+           name: "Design",
+           url: "Design/{action}/{dbName}/{viewName}",
+           defaults: new { controller = "Design", action = "ViewDesign", dbName = UrlParameter.Optional, viewName = UrlParameter.Optional }
+       ); 
 
         }
     }
