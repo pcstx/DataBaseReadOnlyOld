@@ -9,7 +9,24 @@
     <meta name="viewport" content="width=device-width" />
     <title>Grid</title>
     <link href="~/Scripts/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" />
-    <link href="~/Content/index.css" rel="stylesheet" />
+    <style>
+           body, html {
+            height: 100%;
+        }
+
+        body {
+            padding: 0px;
+            margin: 0;
+            overflow: hidden;
+        }
+        h4 {
+            height:21px;
+            line-height:21px;
+        }
+        span {
+            width:100px;
+        }
+    </style>
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>
     <script src="~/Scripts/lib/ligerUI/js/ligerui.all.js"></script>    
     <script type="text/javascript">
@@ -95,18 +112,31 @@
         })
     }
         $(function () {
-            $("#ok").bind("click", function () {
-                var desc = $("#tableDesc").val();
-                editTableDesc(desc);
+            $("#tableDescView").unbind("click.rowsGrid").bind("click.rowsGrid", function () {
+                $("#tableDescView").hide();
+                $("#tableDescTxt").show();
+                $('#tableDescTxt').focus().select();
             });
-        })
+
+            $("#tableDescTxt").unbind("blur.rowsGrid").bind("blur.rowsGrid", function () {
+                var oldDesc = $("#tableDescView").html();
+                var newDesc = $("#tableDescTxt").val();
+                 
+                if (oldDesc != newDesc) {
+                    $("#tableDescView").html(newDesc);
+                    editTableDesc(newDesc);
+                }
+                $("#tableDescView").show();
+                $("#tableDescTxt").hide();
+            }); 
+        }) 
     </script>
 
 </head>
 <body>
     <div style="margin:5px;">
-        <h4>表名：@ViewBag.TableName</h4>
-        <h4>描述：<input type="text" id="tableDesc" value="@ViewBag.Desc" /><button id="ok" >更新</button></h4>
+        <h4>表名：@Html.Raw(ViewBag.TableName)</h4>
+        <h4>描述：<span id="tableDescView">@Html.Raw(ViewBag.Desc)</span><input type="text" style="display:none" id="tableDescTxt" value="@Html.Raw(ViewBag.Desc)" /></h4>
     </div>
     <div id="maingrid"></div>
 </body>
