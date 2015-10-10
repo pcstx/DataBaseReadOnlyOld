@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using System.Web.Mvc; 
+using System.Web.Mvc;
 using DataBase.Models.ViewModels;
 using System.Configuration;
+using System.Text;
 
 namespace DataBase.Controllers
 {
@@ -207,15 +208,19 @@ namespace DataBase.Controllers
             }
             else if (selectType == 2) {
                 ///查询存储过程参数
-
-                ViewBag.SQL = string.Format(@"EXEC  [{0}]
-		                                                @p_MemberId = N'1',
-		                                                @p_Status = N'2',
-		                                                @p_OrderStatus = N'3',
-		                                                @p_Count = 4,
-		                                                @p_Direction = 5", 
-                                                 tableName);
-
+                var param = homeDA.GetProcedureParameters(dbName, tableName, connectionStringName);
+                StringBuilder procedureParam = new StringBuilder();
+                procedureParam.AppendFormat(" EXEC  [{0}] \r\n ", tableName);
+                foreach (var p in param)
+                {
+                    procedureParam.AppendFormat(" {0} = {1}, \r\n ",p.name,p.type); 
+                }
+                string procedureStr = procedureParam.ToString();
+                if (procedureStr.LastIndexOf(',') > 0)
+                {
+                    procedureStr = procedureStr.Substring(0, procedureStr.LastIndexOf(','));
+                }
+                ViewBag.SQL = procedureStr;
             }
             
              return View();

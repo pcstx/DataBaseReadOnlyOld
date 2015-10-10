@@ -39,6 +39,6 @@ namespace DataBase
 
         string GetProcedureSQL(string dbName, string procedureName, string connectionStringName);
 
-        IEnumerable<ProcedureParam> GetProcedureParameters(string dbName, string procedureName, string connectionStringName)
+        IEnumerable<ProcedureParam> GetProcedureParameters(string dbName, string procedureName, string connectionStringName);
     }
 }

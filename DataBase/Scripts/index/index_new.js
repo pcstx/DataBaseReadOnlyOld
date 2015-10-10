@@ -268,11 +268,17 @@ var indexObj = indexObj || {};
          }
         , search: function () {
             var tabid = $(actionNode.target).attr("tabid_search");
+            var type = actionNode.data.type;
             if (!tabid) {
                 tabid = new Date().getTime();
                 $(actionNode.target).attr("tabid_search", tabid)
             }
-            indexObj.addTab(tabid, actionNode.data.Name + "_查询", indexObj.searchUrl + "?dbName=" + actionNode.data.databaseName + "&tableName=" + actionNode.data.Name + "&connectionStringName=" + actionNode.data.connName);
+            if (type == "procedure") {
+                indexObj.addTab(tabid, actionNode.data.Name + "_查询", indexObj.searchUrl + "?dbName=" + actionNode.data.databaseName + "&tableName=" + actionNode.data.Name + "&connectionStringName=" + actionNode.data.connName + "&selectType=2");
+            }
+            else {
+                indexObj.addTab(tabid, actionNode.data.Name + "_查询", indexObj.searchUrl + "?dbName=" + actionNode.data.databaseName + "&tableName=" + actionNode.data.Name + "&connectionStringName=" + actionNode.data.connName);
+            }
         }
         , design: function () {
             if (actionNode.data && actionNode.data.type == "database") return;

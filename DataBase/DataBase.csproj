@@ -139,6 +139,7 @@
     <Compile Include="Models\TableModels\DataBase.cs" />
     <Compile Include="Models\ViewModels\ConnectionStrings.cs" />
     <Compile Include="Models\ViewModels\DataBaseView.cs" />
+    <Compile Include="Models\ViewModels\ProcedureParam.cs" />
     <Compile Include="Models\ViewModels\ProcedureView.cs" />
     <Compile Include="Models\ViewModels\RowsGridView.cs" />
     <Compile Include="Models\ViewModels\RowsView.cs" />
