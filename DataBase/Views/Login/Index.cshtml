@@ -1,0 +1,98 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html> 
+<html>
+<head> 
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>数据库查看系统</title>
+    <meta name="description" content="数据库查看系统">
+    <meta name="viewport" content="width=device-width, initial-scale=1">  
+    <link href="~/Content/main-dev.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.10.2.min.js?v=2015071301"></script> 
+</head>
+<body id="loginPage"> 
+    <div class="loger">
+        <div class="loger-wrap">  
+            <img src="~/Img/logo-dms.png" alt="" />
+        </div>
+        <div class="infoBox">
+            <div class="wrap error">
+                <span class="error">用户名或密码不匹配,请重新输入</span>
+            </div>
+        </div>
+        <div id="form-ct">
+            <form action="@Url.Action("Login","Login")" autocomplete="off" method="post" id="standloginForm">
+                <input id="ip" name="ip" type="hidden">
+                <input id="port" name="port" type="hidden">
+                <input id="remember" name="remember" type="hidden">
+                <input id="from" name="from" type="hidden" value="buc">
+                <div class="input-grp">
+                    <label for="connect"><i class="fa fa-inbox"></i></label>
+                    <div class="inline">
+                        <input type="text" placeholder="网络地址: 端口" name="connect" id="connect" value="" style="width: 360px;">
+                        <!-- <i class="i-ico updown"></i>
+                        <ul class="actSelect" style="display: none"></ul>
+                            -->
+                    </div>
+                </div>
+                <div class="input-grp">
+                    <label for="username"><i class="fa fa-user"></i></label>
+                    <input type="text" placeholder="用户名" name="userName" value="" id="userName" autocomplete="off">
+                   <!-- <i class="i-ico updown"></i>
+                    <ul class="actSelect" style="display: none" id="userNameArea"></ul>-->
+                </div>
+                <div class="input-grp">
+                    <label for="password"><i class="fa fa-unlock-alt"></i></label>
+                    <input type="password" placeholder="输入密码" name="password" id="password" value="" autocomplete="off">
+                </div>
+                <!--
+                <div class="input-grp">
+                    <label for="dbType"><i class="fa fa-space-shuttle"></i></label>
+                    <div class="inline">
+                        <input type="text" placeholder="数据库类型选择" name="dbType" onchange="checkDBType()" id="dbType" value="MySQL" readonly="">
+                        <i class="i-ico updown"></i>
+                        <ul class="actSelect" id="actSelect" style="display: none"> 
+                            <li>MySQL</li> 
+                            <li>SQLServer</li> 
+                        </ul>
+                    </div>
+                    <input type="hidden" name="port">
+                </div>
+                -->
+                <div class="input-grp miss" id="verifyCodeArea">
+                    <label for="verifycode"><i class="fa fa-picture-o"></i></label>
+                    <input type="text" placeholder="输入验证码" style="width: 85px" id="verifycode" name="verifycode">
+                    <span class="verfiyCode">
+                        <img id="verifyCodeImg" src="" alt="" style="">
+                    </span>
+                    <a href="javascript:refreshCode()" class="showAgain">看不清?换一张</a>
+                </div>
+            </form>
+        </div>
+        <div class="keepLogin">
+            <input type="hidden" id="rememberInput"><span class="need-bind">&nbsp;</span>
+            <span class="about">
+                <a href="http://docs.aliyun.com/#/rds/getting-started/database-manage&login-database" target="_blank">关于DMS</a>
+            </span>
+        </div>
+        <div class="showmore-btn">
+            <span class="nor-btn" id="loginButton">
+                <span class=" blue">登录</span>
+            </span>
+        </div>
+        <div class="keepLogin" style="text-align: center;margin-top: 20px;">
+            Copyright &#169;  DMS  All Rights Reserved
+        </div> 
+        <!--[if lte IE 8]>
+    <div class="showIE" style="position: absolute;bottom: 33px;right: 20px;color: #999;">
+        <p>请使用 <a href="http://www.google.cn/intl/zh-CN/chrome/browser/" target="_blank">Chrome</a>,
+            <a href="http://www.firefox.com.cn/" target="_blank">Firefox</a>,或者更高级的IE浏览器浏览此页面</p>
+    </div>
+    <![endif]--> 
+    </div>  
+</body>
+</html>

@@ -4,7 +4,11 @@
     treeProcedureObj = $("ul[data-name='treeProcedure']"); //存储过程
 
     //布局
-    $("#layout1").ligerLayout({ leftWidth: 260, height: '100%', heightDiff: -34, space: 4, onHeightChanged: indexObj.heightChanged });
+    $("#layout1").ligerLayout({
+        leftWidth: 260, height: '100%',
+        heightDiff: -5,
+        space: 4, onHeightChanged: indexObj.heightChanged
+    });
 
     var height = $(".l-layout-center").height();
     //Tab
