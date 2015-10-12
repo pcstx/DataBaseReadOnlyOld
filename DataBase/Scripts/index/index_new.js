@@ -331,8 +331,7 @@ var indexObj = indexObj || {};
                 indexObj.addTab(tabid, actionNode.data.Name, indexObj.procedureDesignUrl + actionNode.data.databaseName + "/" + actionNode.data.Name + "?connectionStringName=" + actionNode.data.connName);
             } 
         }
-        , entity: function () {
-            debugger;
+        , entity: function () { 
             var tabid = $(actionNode.target).attr("tabid_entity"); 
             if (!tabid) {
                 tabid = new Date().getTime();

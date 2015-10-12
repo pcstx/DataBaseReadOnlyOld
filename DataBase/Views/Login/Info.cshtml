@@ -1,0 +1,36 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>版本说明</title>
+    <style>
+        html,body {
+             font-family: 微软雅黑, 宋体, Arial, sans-serif;
+             font-size:14px;
+        }
+    </style>
+</head>
+<body>
+    <h4>使用说明</h4>
+    <div> 
+        <p>提供两种访问方式：1.文件配置；2.登录页面；</p>
+        <p>可以在web.config中[appSettings]里修改loginType的值。值为1时为文件配置，其他为登录页面方式</p>
+        <p>使用文件配置方式配置文件在项目的 App_Data\connectionStrings.config</p>
+        <p>数据库连接配置文件中读连接和写连接请分别配置，数据库操作权限控制根据读写连接字符串来判断。</p>
+    </div>
+    <h4>功能介绍</h4>
+    <div>
+        <p>1.查看数据库表的字段信息；修改表备注和字段备注信息</p>
+        <p>2.查看视图、存储过程创建的SQL语句</p>
+        <p>3.直接查询数据库数据，限制返回结果仅100行；结果可导出Excel</p>
+        <p>3.根据表和视图信息生成C#的实体类</p>
+        <p>备注：相关功能请右击表名</p>
+    </div>
+</body>
+</html>

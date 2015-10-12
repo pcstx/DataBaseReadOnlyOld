@@ -7,7 +7,7 @@ using System.Web.Mvc;
 namespace DataBase.Controllers
 {
     public class LoginController : Controller
-    { 
+    {
         public ActionResult Index()
         {
             return View();
@@ -27,6 +27,15 @@ namespace DataBase.Controllers
                 Session["ConnectionString_login"] = null;
                 return Content("0");
             }
+        }
+
+        /// <summary>
+        /// 功能说明
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Info()
+        {
+            return View();
         }
 
     }

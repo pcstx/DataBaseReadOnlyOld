@@ -535,6 +535,7 @@
     <Content Include="Views\Design\ViewDesign.cshtml" />
     <Content Include="Views\Design\EntityDesign.cshtml" />
     <Content Include="Views\Login\Index.cshtml" />
+    <Content Include="Views\Login\Info.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
