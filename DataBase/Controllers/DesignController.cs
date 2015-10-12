@@ -32,5 +32,11 @@ namespace DataBase.Controllers
             return View();
         }
 
+        public ActionResult EntityDesign(string dbName, string tableName, string connectionStringName = "SqlServerHelper",string typeName="table")
+        {
+            homeDA.GetRows(dbName,tableName,connectionStringName);
+            return View();
+        }
+
     }
 }

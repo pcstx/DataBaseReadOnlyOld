@@ -11,7 +11,7 @@ namespace DataBase
     {
         IEnumerable<DataBaseView> GetDatabase(string connectionStringName);
 
-        IEnumerable<TablesView> GetTables(string dbName, string connectionStringName);
+        IEnumerable<TablesView> GetTables(string dbName, string connectionStringName,string tableName="");
 
         IEnumerable<RowsView> GetRows(string dbName, string TableName, string connectionStringName);
 
@@ -31,9 +31,9 @@ namespace DataBase
         int EditDescription(string dbName, string TableName, string rowName, string Description, string connectionStringName);
         int EditTableDescription(string dbName, string TableName, string Description, string connectionStringName);
 
-        IEnumerable<ViewsView> GetViews(string dbName, string connectionStringName);
+        IEnumerable<ViewsView> GetViews(string dbName, string connectionStringName, string viewName = "");
 
-        IEnumerable<ProcedureView> GetProcedure(string dbName, string connectionStringName);
+        IEnumerable<ProcedureView> GetProcedure(string dbName, string connectionStringName, string procedureName="");
 
         string GetViewSQL(string dbName, string viewName, string connectionStringName);
 

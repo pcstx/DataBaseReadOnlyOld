@@ -29,7 +29,7 @@ namespace DataBase.DataAccess
             }
         }
 
-        public IEnumerable<TablesView> GetTables(string dbName, string connectionStringName)
+        public IEnumerable<TablesView> GetTables(string dbName, string connectionStringName,string tableName="")
         {
             IEnumerable<TablesView> list_tables = new List<TablesView>();
             try
@@ -38,14 +38,19 @@ namespace DataBase.DataAccess
                                     t.modify_date as modifydate,s.value as note,databaseName='{0}', type='table',connName='{1}'
                                     from [{0}].sys.objects t with(nolock)
                                     left join [{0}].sys.extended_properties s with(nolock) on t.object_id=s.major_id and s.minor_id=0  
-                                    where [type] = 'u' and is_ms_shipped=0
+                                    where [type] = 'u' and is_ms_shipped=0 {2}
                                     order by name;";
 
                 dbName=dbName.Replace('\'',' ');
-                tableSQL = string.Format(tableSQL, dbName,connectionStringName);
+                string tableSelect = "";
+                if (!string.IsNullOrEmpty(tableName))
+                {
+                    tableSelect = string.Format(" and t.name like '%'+@name+'%' ");
+                }
+                tableSQL = string.Format(tableSQL, dbName,connectionStringName,tableSelect);
                 using (IDbConnection conn = ConnectionString.GetConnection(connectionStringName))
                 {
-                     list_tables = conn.Query<TablesView>(tableSQL);
+                    list_tables = conn.Query<TablesView>(tableSQL, new { name = tableName });
                     return list_tables;
                 }
             }
@@ -264,7 +269,7 @@ namespace DataBase.DataAccess
             }
         }
 
-        public IEnumerable<ViewsView> GetViews(string dbName, string connectionStringName)
+        public IEnumerable<ViewsView> GetViews(string dbName, string connectionStringName,string viewName="")
         {
             IEnumerable<ViewsView> list_views = new List<ViewsView>();
 
@@ -272,12 +277,18 @@ namespace DataBase.DataAccess
             {
                 string sql = @" select name as Name,object_id as Id,create_date as CreateDate,modify_date as ModifyDate, databaseName='{0}',type='view',connName='{1}'
                                from [{0}].sys.objects t with(nolock)
-                               where [type] = 'V' order by name ";
+                               where [type] = 'V' {2} order by name ";
+
+                string viewSelect = "";
+                if (!string.IsNullOrEmpty(viewName))
+                {
+                    viewSelect = string.Format(" and Name like '%'+@name+'%' ");
+                }
                 dbName = dbName.Replace('\'', ' ');
-                sql = string.Format(sql, dbName, connectionStringName);
+                sql = string.Format(sql, dbName, connectionStringName, viewSelect);
                 using (IDbConnection conn = ConnectionString.GetConnection(connectionStringName))
                 {
-                    list_views = conn.Query<ViewsView>(sql);
+                    list_views = conn.Query<ViewsView>(sql, new { name = viewName });
                     return list_views;
                 }
             }
@@ -323,7 +334,7 @@ namespace DataBase.DataAccess
         /// <param name="dbName"></param>
         /// <param name="connectionStringName"></param>
         /// <returns></returns>
-        public IEnumerable<ProcedureView> GetProcedure(string dbName, string connectionStringName)
+        public IEnumerable<ProcedureView> GetProcedure(string dbName, string connectionStringName,string procedureName="")
         {
             IEnumerable<ProcedureView> list_procedure = new List<ProcedureView>();
 
@@ -332,11 +343,17 @@ namespace DataBase.DataAccess
                 string sql = @" select name as Name,object_id as Id,create_date as CreateDate,modify_date as ModifyDate,databaseName='{0}',type='procedure',connName='{1}'
                                from [{0}].sys.objects t with(nolock)
                                where [type] = 'P' order by name ";
+
+                string procedureSelect = "";
+                if (!string.IsNullOrEmpty(procedureName))
+                {
+                    procedureSelect = string.Format(" and Name like '%'+@name+'%' ");
+                }
                 dbName = dbName.Replace('\'', ' ');
-                sql = string.Format(sql, dbName, connectionStringName);
+                sql = string.Format(sql, dbName, connectionStringName, procedureSelect);
                 using (IDbConnection conn = ConnectionString.GetConnection(connectionStringName))
                 {
-                    list_procedure = conn.Query<ProcedureView>(sql);
+                    list_procedure = conn.Query<ProcedureView>(sql,new {name=procedureName });
                     return list_procedure;
                 }
             }

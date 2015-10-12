@@ -1,0 +1,71 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>EntityDesign</title>
+    <style>
+        * {
+            margin:0px;
+            padding:0px;
+        }
+        textarea {
+            width:100%;
+        }
+    </style>
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script>
+        $(function () {
+
+        })
+        var entityObj = entityObj || {};
+
+        (function ($) {
+            $.extend(entityObj, {
+                data: {}
+                , init: function () {
+
+                }
+                , autoPropety: function () {
+                    var html;
+
+                    html = " public class tablename "+
+                   " { "+
+                       " public Guid PathId { get; set; } "+
+                       " public byte[] PageSettings { get; set; } "+
+                       " public DateTime LastUpdatedDate { get; set; } "+
+                       " public byte[] utsdbmask { get; set; } "+
+                   " } ";
+
+                    var filed = "";
+                    entityObj.data.each(function (index) {
+                        var _this = this;
+                        filed += " public " + _this.Type + " " + _this.Name + " { get; set; } ";                        
+                    })
+
+                }
+                , field: function () { }
+                , property: function () { }
+            });
+        })(jQuery);
+    </script>
+</head>
+<body>
+    <div>
+        <form>
+            代码风格：
+            <input type="radio" name="entity" checked value="autoPropety" />自动属性
+            <input type="radio" name="entity" value="field" />字段
+            <input type="radio" name="entity" value="property" />属性
+        </form>
+    </div>
+    <div>
+        <textarea></textarea>
+    </div>
+</body>
+</html>

@@ -529,6 +529,7 @@
     <Content Include="Views\Sider\Index.cshtml" />
     <Content Include="Views\Sider\SiderDatabase.cshtml" />
     <Content Include="Views\Design\ViewDesign.cshtml" />
+    <Content Include="Views\Design\EntityDesign.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

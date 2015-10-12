@@ -8,12 +8,18 @@
         }
 
 		.siderTop select{
-			width: 150px;
+			width: 100%;
 			height: 25px;
 		}
-		.siderTop button{
-			width:50px;
-			height: 25px
+		.siderTop .tableName{
+          margin: 5px 0px 0px 0px;
+          width: 98%;
+          height: 23px;
+          line-height: 23px;
+          border-width:1px;
+          border-style:solid;
+          border-color:silver #d9d9d9 #d9d9d9;
+          padding:0px 0px 0px 4px;
 		}
 
 		.siderView{
