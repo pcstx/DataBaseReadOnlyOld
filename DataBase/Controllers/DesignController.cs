@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using System.Web.Mvc;
+using System.Web.Mvc; 
 
 namespace DataBase.Controllers
 {
@@ -32,9 +33,12 @@ namespace DataBase.Controllers
             return View();
         }
 
-        public ActionResult EntityDesign(string dbName, string tableName, string connectionStringName = "SqlServerHelper",string typeName="table")
+        public ActionResult EntityDesign(string dbName, string tableName, string connectionStringName = "SqlServerHelper")
         {
-            homeDA.GetRows(dbName,tableName,connectionStringName);
+            var entity = homeDA.GetColumns(dbName, tableName, connectionStringName); 
+            string entityStr = JsonConvert.SerializeObject(entity).Replace('\"', '\'');
+             ViewBag.Data = HttpUtility.UrlEncode(entityStr);
+            ViewBag.TableName = tableName;
             return View();
         }
 

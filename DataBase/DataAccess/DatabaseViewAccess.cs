@@ -392,8 +392,7 @@ namespace DataBase.DataAccess
                 return procedureText;
             }
         }
-
-
+        
         public IEnumerable<ProcedureParam> GetProcedureParameters(string dbName, string procedureName, string connectionStringName)
         {
             IEnumerable<ProcedureParam> list_procedure = new List<ProcedureParam>();
@@ -422,9 +421,32 @@ namespace DataBase.DataAccess
             catch (Exception ex)
             {
                 return list_procedure;
+            } 
+        }
+
+        public IEnumerable<ColumnsView> GetColumns(string dbName, string tableName, string connectionStringName)
+        {
+            IEnumerable<ColumnsView> list_columns = new List<ColumnsView>();
+
+            string sql = @" SELECT syscolumns.name,systypes.name as rowType,syscolumns.isnullable,syscolumns.length 
+                               FROM [{0}].[dbo].[syscolumns] with(nolock), [{0}].[dbo].[systypes] with(nolock)
+                               WHERE syscolumns.xusertype = systypes.xusertype 
+                               AND syscolumns.id = object_id('{1}') ";
+
+            try
+            {
+                dbName = dbName.Replace('\'', ' ');
+                sql = string.Format(sql, dbName, tableName);
+                using (IDbConnection conn = ConnectionString.GetConnection(connectionStringName))
+                {
+                    list_columns = conn.Query<ColumnsView>(sql);
+                    return list_columns;
+                }
             }
-
-
+            catch (Exception ex)
+            {
+                return list_columns;
+            }
         }
 
     }

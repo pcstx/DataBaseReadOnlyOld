@@ -138,6 +138,7 @@
     <Compile Include="Interface\IDatabaseView.cs" />
     <Compile Include="LoginFilterAttribute .cs" />
     <Compile Include="Models\TableModels\DataBase.cs" />
+    <Compile Include="Models\ViewModels\ColumnsView.cs" />
     <Compile Include="Models\ViewModels\ConnectionStrings.cs" />
     <Compile Include="Models\ViewModels\DataBaseView.cs" />
     <Compile Include="Models\ViewModels\ProcedureParam.cs" />
