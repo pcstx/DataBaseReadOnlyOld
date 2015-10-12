@@ -77,9 +77,10 @@
             padding: 0;
             height: 31px;
             line-height: 31px;
-            background: url('../Scripts/lib/images/top.jpg') repeat-x bottom;
+           /* background: url('../Scripts/lib/images/top.jpg') repeat-x bottom;*/
             position: relative;
-            border-top: 1px solid #1D438B;
+           /* border-top: 1px solid #1D438B;*/
+           background-color:#2f3b53;
         }
 
         .l-topmenu-logo {
