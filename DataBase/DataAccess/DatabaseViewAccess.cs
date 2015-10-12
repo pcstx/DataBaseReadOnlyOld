@@ -15,7 +15,7 @@ namespace DataBase.DataAccess
             IEnumerable<DataBaseView> list_database = new List<DataBaseView>();
             try
             {
-                string dbSQL = "select dbid as id,name,crdate as createDate,type='database',connName='"+connectionStringName+@"' from master..sysdatabases with(nolock) where dbid > 4 order by name;--用户库";
+                string dbSQL = " select dbid as id,name,crdate as createDate,type='database',connName='"+connectionStringName+@"' from master..sysdatabases with(nolock) where dbid > 4 order by name;--用户库";
             
                 using (IDbConnection conn = ConnectionString.GetConnection(connectionStringName))
                 {
@@ -34,7 +34,8 @@ namespace DataBase.DataAccess
             IEnumerable<TablesView> list_tables = new List<TablesView>();
             try
             {
-                string tableSQL = @"select t.object_id as Id,t.name as Name,t.create_date as createdate,
+                string tableSQL = @" use {0}
+                                    select t.object_id as Id,t.name as Name,t.create_date as createdate,
                                     t.modify_date as modifydate,s.value as note,databaseName='{0}', type='table',connName='{1}'
                                     from [{0}].sys.objects t with(nolock)
                                     left join [{0}].sys.extended_properties s with(nolock) on t.object_id=s.major_id and s.minor_id=0  
@@ -66,7 +67,8 @@ namespace DataBase.DataAccess
             try
             {
                 dbName = dbName.Replace('\'', ' ');
-                string rowSQL = @" SELECT id=C.column_id,name=C.name,primaryKey=ISNULL(IDX.PrimaryKey,N''),
+                string rowSQL = @" use {0}
+                                    SELECT id=C.column_id,name=C.name,primaryKey=ISNULL(IDX.PrimaryKey,N''),
                                     rowType=T.name,lenght=C.max_length,isNull=C.is_nullable,defaultValue=ISNULL(D.definition,N''),
                                     note=ISNULL(PFD.[value],N''), type='row'
                                     FROM [{0}].sys.columns C with(nolock)
@@ -108,7 +110,8 @@ namespace DataBase.DataAccess
             try
             {
                 dbName = dbName.Replace('\'', ' ');
-                string rowSQL = @"  SELECT TOP {1} * 
+                string rowSQL = @"  use {0}
+                                        SELECT TOP {1} * 
                                         FROM   (
                                         SELECT ROW_NUMBER() OVER (ORDER BY C.column_id) AS RowNumber,
                                         id=C.column_id,name=C.name,primaryKey=ISNULL(IDX.PrimaryKey,N''),
@@ -152,7 +155,8 @@ namespace DataBase.DataAccess
         {
             try
             {
-                string rowSQL = @" SELECT  count(*) as total FROM [{0}].sys.columns C with(nolock) 
+                string rowSQL = @" use {0} 
+                                         SELECT  count(*) as total FROM [{0}].sys.columns C with(nolock) 
                                          INNER JOIN [{0}].sys.objects O with(nolock) ON C.[object_id]=O.[object_id] AND O.type='U' AND O.is_ms_shipped=0 
                                         WHERE O.name=@tableName ";
                 dbName = dbName.Replace('\'', ' ');
@@ -275,7 +279,8 @@ namespace DataBase.DataAccess
 
             try
             {
-                string sql = @" select name as Name,object_id as Id,create_date as CreateDate,modify_date as ModifyDate, databaseName='{0}',type='view',connName='{1}'
+                string sql = @" use {0}
+                               select name as Name,object_id as Id,create_date as CreateDate,modify_date as ModifyDate, databaseName='{0}',type='view',connName='{1}'
                                from [{0}].sys.objects t with(nolock)
                                where [type] = 'V' {2} order by name ";
 
@@ -308,7 +313,8 @@ namespace DataBase.DataAccess
         public string GetViewSQL(string dbName, string viewName, string connectionStringName)
         {
             string viewText = string.Empty;
-            string sql = @" select text from 
+            string sql = @" use {0}
+                               select text from 
                                [{0}].[dbo].[syscomments] s1 with(nolock)
                                join [{0}].[dbo].[sysobjects] s2 with(nolock)
                                on s1.id=s2.id where name='{1}' ";
@@ -340,7 +346,8 @@ namespace DataBase.DataAccess
 
             try
             {
-                string sql = @" select name as Name,object_id as Id,create_date as CreateDate,modify_date as ModifyDate,databaseName='{0}',type='procedure',connName='{1}'
+                string sql = @" use {0}
+                               select name as Name,object_id as Id,create_date as CreateDate,modify_date as ModifyDate,databaseName='{0}',type='procedure',connName='{1}'
                                from [{0}].sys.objects t with(nolock)
                                where [type] = 'P' order by name ";
 
@@ -373,7 +380,8 @@ namespace DataBase.DataAccess
         public string GetProcedureSQL(string dbName, string procedureName, string connectionStringName)
         {
             string procedureText = string.Empty;
-            string sql = @" select b.[definition] 
+            string sql = @" use {0} 
+                            select b.[definition] 
                             from [{0}].[sys].[all_objects] a with(nolock),[{0}].[sys].[sql_modules] b with(nolock)
                             where a.is_ms_shipped=0 and a.object_id = b.object_id and a.[type] in ('P') 
                             and a.name='{1}' ";
@@ -397,7 +405,8 @@ namespace DataBase.DataAccess
         {
             IEnumerable<ProcedureParam> list_procedure = new List<ProcedureParam>();
 
-            string sql = @" select p.name,t.name as [type]
+            string sql = @"  use {0}
+                                select p.name,t.name as [type]
                                 from
                                 (
                                 select name,xusertype from [{0}].sys.syscolumns  with(nolock)
@@ -428,8 +437,9 @@ namespace DataBase.DataAccess
         {
             IEnumerable<ColumnsView> list_columns = new List<ColumnsView>();
 
-            string sql = @" SELECT syscolumns.name,systypes.name as rowType,syscolumns.isnullable,syscolumns.length 
-                               FROM [{0}].[dbo].[syscolumns] with(nolock), [{0}].[dbo].[systypes] with(nolock)
+            string sql = @"  use {0}
+                                SELECT syscolumns.name,systypes.name as rowType,syscolumns.isnullable,syscolumns.length 
+                               FROM syscolumns with(nolock), systypes with(nolock)
                                WHERE syscolumns.xusertype = systypes.xusertype 
                                AND syscolumns.id = object_id('{1}') ";
 

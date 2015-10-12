@@ -19,7 +19,8 @@ namespace DataBase
             {
                 if (filterContext.HttpContext.Session["ConnectionString_login"] == null)
                 {
-                   filterContext.HttpContext.Response.Redirect("/Home/Login");
+                    filterContext.Result = new RedirectToRouteResult(new System.Web.Routing.RouteValueDictionary(new { Controller = "Login", action = "Index" }));
+
                 }
             }
         }

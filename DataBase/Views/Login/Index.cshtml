@@ -25,7 +25,7 @@
             </div>
         </div>
         <div id="form-ct">
-            <form action="@Url.Action("Login","Login")" autocomplete="off" method="post" id="standloginForm">
+            <form autocomplete="off" method="post" id="standloginForm">
                 <input id="ip" name="ip" type="hidden">
                 <input id="port" name="port" type="hidden">
                 <input id="remember" name="remember" type="hidden">
@@ -93,6 +93,31 @@
             <a href="http://www.firefox.com.cn/" target="_blank">Firefox</a>,或者更高级的IE浏览器浏览此页面</p>
     </div>
     <![endif]--> 
-    </div>  
+    </div> 
+    <script>
+     $(function () {
+         $("#loginButton").click(login);
+     })
+
+     var login = function () { 
+         var server = $("#connect").val();
+         var uid = $("#userName").val();
+         var password = $("#password").val();
+
+         $.ajax({
+             url: "@Url.Action("Login","Login")",
+             type:"post",
+             data:"server="+server+"&uid="+uid+"&password="+password,
+             success:function(data){
+                 if (data == "1") {
+                     window.location.href = "@Url.Action("Index", "Home")";
+                 }
+                 else {
+                     $(".infoBox").slideDown();
+                 }
+             }
+         }); 
+     }
+    </script> 
 </body>
 </html>

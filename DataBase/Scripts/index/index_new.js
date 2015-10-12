@@ -31,7 +31,7 @@
                     { text: '设计', click: indexObj.design },
                     { text: '查看', click: indexObj.search },
                     { line: true },
-                    { text: '生成实体类', click: indexObj.enttiy }
+                    { text: '生成实体类', click: indexObj.entity }
                     ]
     });
     procedureMenu = $.ligerMenu({
@@ -70,7 +70,7 @@ var indexObj = indexObj || {};
                 var dbName = $(_this).parent().parent().prev().children(".dbname").children("option:selected").val();
                 var tableName = $(_this).parent().parent().prev().children(".tableName").val();
                 var content = $(_this).parent().parent().children(".treeView").children("ul[data-name='treeTable']").html(); //内容
-                var scrollIndex = $(_this).parent().parent().parent().attr("data-index"); //所有位置标号
+                var scrollIndex = $(_this).parent().parent().parent().attr("data-index")||0; //所有位置标号
                 $(_this).parent().parent().prev().children(".tableName").attr("placeholder", "模糊匹配表名");
 
                 $(_this).parent().children().removeClass("selected");
@@ -94,7 +94,7 @@ var indexObj = indexObj || {};
                 var dbName = $(_this).parent().parent().prev().children(".dbname").children("option:selected").val();
                 var viewName = $(_this).parent().parent().prev().children(".tableName").val();
                 var content = $(_this).parent().parent().children(".tableView").children("ul[data-name='treeView']").html(); //内容
-                var scrollIndex = $(_this).parent().parent().parent().attr("data-index"); //所有位置标号
+                var scrollIndex = $(_this).parent().parent().parent().attr("data-index")||0; //所有位置标号
                 $(_this).parent().parent().prev().children(".tableName").attr("placeholder", "模糊匹配视图名");
 
                 $(_this).parent().children().removeClass("selected");
@@ -118,7 +118,7 @@ var indexObj = indexObj || {};
                 var dbName = $(_this).parent().parent().prev().children(".dbname").children("option:selected").val();
                 var procedureName = $(_this).parent().parent().prev().children(".tableName").val();
                 var content = $(_this).parent().parent().children(".procedure").children("ul[data-name='treeProcedure']").html(); //内容
-                var scrollIndex = $(_this).parent().parent().parent().attr("data-index"); //所有位置标号
+                var scrollIndex = $(_this).parent().parent().parent().attr("data-index")||0; //所有位置标号
                 $(_this).parent().parent().prev().children(".tableName").attr("placeholder", "模糊匹配存储过程名");
 
                 $(_this).parent().children().removeClass("selected");
@@ -148,9 +148,9 @@ var indexObj = indexObj || {};
                 tableNameChange = true;
             })
         }
-        , selectDB: function (e) {
+        , selectDB: function (e) { 
             var _this = e;
-            var index = $(_this).parent().parent().attr("data-index");
+            var index = $(_this).parent().parent().attr("data-index")||0;
             var databasename = $(".dbname").eq(index).children("option:selected").val();
             var tablename = $(".tableName").eq(index).val();
 
@@ -192,7 +192,7 @@ var indexObj = indexObj || {};
                 indexObj.addTab(tabid, node.data.Name, indexObj.procedureDesignUrl + node.data.databaseName + "/" + node.data.Name + "?connectionStringName=" + node.data.connName);
             }
         }
-        , buildTableTree: function (index, databaseName,tableName) {    //表格      
+        , buildTableTree: function (index, databaseName, tableName) {    //表格    
             var tree = $(treeTableObj[index]);
             var connName = tree.attr("data-connName");
             tree.ligerTree({
@@ -312,7 +312,7 @@ var indexObj = indexObj || {};
                 indexObj.addTab(tabid, actionNode.data.Name + "_查询", indexObj.searchUrl + "?dbName=" + actionNode.data.databaseName + "&tableName=" + actionNode.data.Name + "&connectionStringName=" + actionNode.data.connName);
             }
         }
-        , design: function () {
+        , design: function () { 
             if (actionNode.data && actionNode.data.type == "database") return;
             var type = actionNode.data.type
             var tabid = $(actionNode.target).attr("tabid");
@@ -328,15 +328,15 @@ var indexObj = indexObj || {};
                 indexObj.addTab(tabid, actionNode.data.Name, indexObj.viewDesignUrl + actionNode.data.databaseName + "/" + actionNode.data.Name + "?connectionStringName=" + actionNode.data.connName);
             }
             else if (type == "procedure") {
-                indexObj.addTab(tabid, node.data.Name, indexObj.procedureDesignUrl + actionNode.data.databaseName + "/" + actionNode.data.Name + "?connectionStringName=" + actionNode.data.connName);
+                indexObj.addTab(tabid, actionNode.data.Name, indexObj.procedureDesignUrl + actionNode.data.databaseName + "/" + actionNode.data.Name + "?connectionStringName=" + actionNode.data.connName);
             } 
         }
-        , enttiy: function () {
-            var tabid = $(actionNode.target).attr("tabid_search");
-            var type = actionNode.data.type;
+        , entity: function () {
+            debugger;
+            var tabid = $(actionNode.target).attr("tabid_entity"); 
             if (!tabid) {
                 tabid = new Date().getTime();
-                $(actionNode.target).attr("tabid_search", tabid)
+                $(actionNode.target).attr("tabid_entity", tabid)
             }
             indexObj.addTab(tabid, actionNode.data.Name + "_实体", indexObj.entityDesignUrl + "?dbName=" + actionNode.data.databaseName + "&tableName=" + actionNode.data.Name + "&connectionStringName=" + actionNode.data.connName);
         }
